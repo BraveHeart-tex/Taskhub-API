@@ -1,17 +1,22 @@
 import { timingSafeEqual } from 'node:crypto';
 import { toAuthenticatedUser, toSessionContext } from './auth.mappers';
 import type { SessionValidationResult } from './auth.types';
-import { getSessionExpiry, hashSessionSecret } from './session';
+import { verifyPassword } from './password';
+import {
+  generateSecureRandomString,
+  getSessionExpiry,
+  hashSessionSecret,
+} from './session';
 import type { SessionRepo } from './session.repo';
 import type { UserRepo } from './user.repo';
 
 export function createAuthService(
   userRepo: UserRepo,
-  sessionRepo: SessionRepo,
+  sessionRepo: SessionRepo
 ) {
   return {
     async validateSession(
-      token: string | undefined,
+      token: string | undefined
     ): Promise<SessionValidationResult | null> {
       if (!token) return null;
 
@@ -49,6 +54,42 @@ export function createAuthService(
       return {
         user: toAuthenticatedUser(user),
         session: toSessionContext(updatedSession),
+      };
+    },
+    async login(email: string, password: string) {
+      const user = await userRepo.findByEmail(email);
+      if (!user) {
+        return {
+          ok: false as const,
+        };
+      }
+
+      const isPasswordValid = await verifyPassword(user.passwordHash, password);
+      if (!isPasswordValid) {
+        return {
+          ok: false as const,
+        };
+      }
+
+      const sessionId = generateSecureRandomString();
+      const sessionSecret = generateSecureRandomString();
+      const secretHash = Buffer.from(
+        await hashSessionSecret(sessionSecret)
+      ).toString('base64');
+      const sessionExpiresAt = new Date(Date.now() + 30 * 24 * 60 * 60 * 1000);
+
+      await sessionRepo.create({
+        id: sessionId,
+        secretHash,
+        userId: user.id,
+        expiresAt: sessionExpiresAt,
+      });
+
+      return {
+        ok: true as const,
+        user: toAuthenticatedUser(user),
+        sessionId,
+        sessionSecret,
       };
     },
   };
