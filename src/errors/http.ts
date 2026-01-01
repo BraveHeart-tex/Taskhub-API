@@ -38,4 +38,8 @@ export const httpError = {
   badRequest(app: FastifyInstance, message = 'Bad request') {
     return throwHttpError(app, 400, 'BAD_REQUEST', message);
   },
+
+  internalServerError(app: FastifyInstance, message = 'Internal server error') {
+    return throwHttpError(app, 500, 'INTERNAL_SERVER_ERROR', message);
+  },
 };

@@ -1,7 +1,7 @@
 import { timingSafeEqual } from 'node:crypto';
 import { toAuthenticatedUser, toSessionContext } from './auth.mappers';
 import type { SessionValidationResult } from './auth.types';
-import { verifyPassword } from './password';
+import { hashPassword, verifyPassword } from './password';
 import {
   generateSecureRandomString,
   getSessionExpiry,
@@ -76,13 +76,47 @@ export function createAuthService(
       const secretHash = Buffer.from(
         await hashSessionSecret(sessionSecret)
       ).toString('base64');
-      const sessionExpiresAt = new Date(Date.now() + 30 * 24 * 60 * 60 * 1000);
+      const sessionExpiresAt = getSessionExpiry(30);
 
       await sessionRepo.create({
         id: sessionId,
         secretHash,
         userId: user.id,
         expiresAt: sessionExpiresAt,
+      });
+
+      return {
+        ok: true as const,
+        user: toAuthenticatedUser(user),
+        sessionId,
+        sessionSecret,
+      };
+    },
+    async signup(email: string, password: string) {
+      const existingUser = await userRepo.findByEmail(email);
+      if (existingUser) {
+        return {
+          ok: false as const,
+          error: 'EMAIL_ALREADY_EXISTS' as const,
+        };
+      }
+      const passwordHash = await hashPassword(password);
+      const user = await userRepo.create({
+        email,
+        passwordHash,
+      });
+
+      const sessionId = generateSecureRandomString();
+      const sessionSecret = generateSecureRandomString();
+      const secretHash = Buffer.from(
+        await hashSessionSecret(sessionSecret)
+      ).toString('base64');
+
+      await sessionRepo.create({
+        id: sessionId,
+        secretHash,
+        userId: user.id,
+        expiresAt: getSessionExpiry(30),
       });
 
       return {
