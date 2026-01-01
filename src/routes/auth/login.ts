@@ -1,10 +1,9 @@
 import type { FastifyPluginAsyncZod } from 'fastify-type-provider-zod';
+import { verifyPassword } from '../../auth/password';
 import {
   generateSecureRandomString,
-  hashPassword,
   hashSessionSecret,
-  verifyPassword,
-} from '../../auth/password';
+} from '../../auth/session';
 import { createSessionRepo } from '../../auth/session.repo';
 import { createUserRepo } from '../../auth/user.repo';
 import { httpError } from '../../errors/http';
