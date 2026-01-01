@@ -1,17 +1,9 @@
 import type { FastifyPluginAsyncZod } from 'fastify-type-provider-zod';
-import { createAuthService } from '../../auth/auth.service';
-import { createSessionRepo } from '../../auth/session.repo';
-import { createUserRepo } from '../../auth/user.repo';
-import { httpError } from '../../errors/http';
+import { AlreadyLoggedInError } from '../../domain/auth/auth.errors';
 import { apiErrorSchema } from '../../shared/schemas/error';
 import { loginBodySchema, userSchema } from './schema';
 
 const signUpRoute: FastifyPluginAsyncZod = async (app) => {
-  const authService = createAuthService(
-    createUserRepo(app.db),
-    createSessionRepo(app.db)
-  );
-
   app.post(
     '/signup',
     {
@@ -25,30 +17,13 @@ const signUpRoute: FastifyPluginAsyncZod = async (app) => {
     },
     async (request, response) => {
       if (request.user?.id || request.session?.id) {
-        httpError.conflict(
-          app,
-          'ALREADY_LOGGED_IN',
-          'User is already logged in'
-        );
+        throw new AlreadyLoggedInError();
       }
 
-      const result = await authService.signup(
+      const result = await app.auth.signup(
         request.body.email,
         request.body.password
       );
-
-      if (!result.ok) {
-        if (result.error === 'EMAIL_ALREADY_EXISTS') {
-          httpError.conflict(
-            app,
-            'EMAIL_ALREADY_EXISTS',
-            'An account with this email already exists.'
-          );
-        }
-
-        httpError.internalServerError(app, 'An unexpected error occurred.');
-        return;
-      }
 
       response.setCookie(
         'session_token',
@@ -60,6 +35,7 @@ const signUpRoute: FastifyPluginAsyncZod = async (app) => {
           sameSite: 'strict',
         }
       );
+
       return response.status(201).send({
         id: result.user.id,
         email: result.user.email,

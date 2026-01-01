@@ -1,5 +1,7 @@
 import fp from 'fastify-plugin';
+import { DomainError } from '../domain/shared/domain-error';
 import { isFastifyHttpError } from '../errors/is-http-error';
+import { errorRegistry } from '../transport/errors/error-registry';
 
 export default fp(async (app) => {
   app.setErrorHandler((err, request, reply) => {
@@ -12,6 +14,22 @@ export default fp(async (app) => {
           requestId,
         },
       });
+    }
+
+    if (err instanceof DomainError) {
+      const mapping = errorRegistry.get(
+        err.constructor as new () => DomainError
+      );
+
+      if (mapping) {
+        return reply.status(mapping.status).send({
+          error: {
+            code: err.code,
+            message: mapping.message,
+            requestId,
+          },
+        });
+      }
     }
 
     // Truly unknown errors

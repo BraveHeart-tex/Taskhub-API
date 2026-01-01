@@ -1,4 +1,8 @@
 import { timingSafeEqual } from 'node:crypto';
+import {
+  EmailAlreadyExistsError,
+  InvalidCredentialsError,
+} from '../domain/auth/auth.errors';
 import { toAuthenticatedUser, toSessionContext } from './auth.mappers';
 import type { SessionValidationResult } from './auth.types';
 import { hashPassword, verifyPassword } from './password';
@@ -59,16 +63,12 @@ export function createAuthService(
     async login(email: string, password: string) {
       const user = await userRepo.findByEmail(email);
       if (!user) {
-        return {
-          ok: false as const,
-        };
+        throw new InvalidCredentialsError();
       }
 
       const isPasswordValid = await verifyPassword(user.passwordHash, password);
       if (!isPasswordValid) {
-        return {
-          ok: false as const,
-        };
+        throw new InvalidCredentialsError();
       }
 
       const sessionId = generateSecureRandomString();
@@ -86,7 +86,6 @@ export function createAuthService(
       });
 
       return {
-        ok: true as const,
         user: toAuthenticatedUser(user),
         sessionId,
         sessionSecret,
@@ -95,11 +94,9 @@ export function createAuthService(
     async signup(email: string, password: string) {
       const existingUser = await userRepo.findByEmail(email);
       if (existingUser) {
-        return {
-          ok: false as const,
-          error: 'EMAIL_ALREADY_EXISTS' as const,
-        };
+        throw new EmailAlreadyExistsError();
       }
+
       const passwordHash = await hashPassword(password);
       const user = await userRepo.create({
         email,
@@ -120,7 +117,6 @@ export function createAuthService(
       });
 
       return {
-        ok: true as const,
         user: toAuthenticatedUser(user),
         sessionId,
         sessionSecret,

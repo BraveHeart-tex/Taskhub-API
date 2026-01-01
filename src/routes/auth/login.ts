@@ -1,17 +1,9 @@
 import type { FastifyPluginAsyncZod } from 'fastify-type-provider-zod';
-import { createAuthService } from '../../auth/auth.service';
-import { createSessionRepo } from '../../auth/session.repo';
-import { createUserRepo } from '../../auth/user.repo';
-import { httpError } from '../../errors/http';
+import { AlreadyLoggedInError } from '../../domain/auth/auth.errors';
 import { apiErrorSchema } from '../../shared/schemas/error';
 import { loginBodySchema, userSchema } from './schema';
 
 const loginRoute: FastifyPluginAsyncZod = async (app) => {
-  const authService = createAuthService(
-    createUserRepo(app.db),
-    createSessionRepo(app.db)
-  );
-
   app.post(
     '/login',
     {
@@ -19,27 +11,20 @@ const loginRoute: FastifyPluginAsyncZod = async (app) => {
         body: loginBodySchema,
         response: {
           201: userSchema,
+          400: apiErrorSchema,
           409: apiErrorSchema,
         },
       },
     },
     async (request, response) => {
       if (request.user?.id || request.session?.id) {
-        httpError.conflict(
-          app,
-          'ALREADY_LOGGED_IN',
-          'User is already logged in'
-        );
+        throw new AlreadyLoggedInError();
       }
 
-      const result = await authService.login(
+      const result = await app.auth.login(
         request.body.email,
         request.body.password
       );
-
-      if (!result.ok) {
-        return httpError.badRequest(app, 'invalid email or password');
-      }
 
       response.setCookie(
         'session_token',
@@ -51,6 +36,7 @@ const loginRoute: FastifyPluginAsyncZod = async (app) => {
           sameSite: 'strict',
         }
       );
+
       return response.status(201).send({
         id: result.user.id,
         email: result.user.email,
