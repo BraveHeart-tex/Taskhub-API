@@ -1,7 +1,7 @@
 import type { FastifyPluginAsyncZod } from 'fastify-type-provider-zod';
 import { AlreadyLoggedInError } from '../../domain/auth/auth.errors';
 import { apiErrorSchema } from '../../shared/schemas/error';
-import { loginBodySchema, userSchema } from './schema';
+import { authenticatedUserSchema, loginBodySchema } from './schema';
 
 const signUpRoute: FastifyPluginAsyncZod = async (app) => {
   app.post(
@@ -10,7 +10,7 @@ const signUpRoute: FastifyPluginAsyncZod = async (app) => {
       schema: {
         body: loginBodySchema,
         response: {
-          201: userSchema,
+          201: authenticatedUserSchema,
           409: apiErrorSchema,
         },
       },

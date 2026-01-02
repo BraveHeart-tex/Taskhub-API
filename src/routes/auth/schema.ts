@@ -5,7 +5,7 @@ export const loginBodySchema = z.object({
   password: z.string().min(8).max(256),
 });
 
-export const userSchema = z.object({
+export const authenticatedUserSchema = z.object({
   id: z.uuid(),
   email: z.email(),
   createdAt: z.date(),
