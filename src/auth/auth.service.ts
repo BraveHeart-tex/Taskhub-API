@@ -3,6 +3,7 @@ import {
   EmailAlreadyExistsError,
   InvalidCredentialsError,
 } from '../domain/auth/auth.errors';
+import type { AuthService } from '../domain/auth/auth.service';
 import { toAuthenticatedUser, toSessionContext } from './auth.mappers';
 import type { SessionValidationResult } from './auth.types';
 import { hashPassword, verifyPassword } from './password';
@@ -17,7 +18,7 @@ import type { UserRepo } from './user.repo';
 export function createAuthService(
   userRepo: UserRepo,
   sessionRepo: SessionRepo
-) {
+): AuthService {
   return {
     async validateSession(
       token: string | undefined
