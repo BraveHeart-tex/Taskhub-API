@@ -1,6 +1,6 @@
 import type { FastifyPluginAsyncZod } from 'fastify-type-provider-zod';
 import { UnauthenticatedError } from '../../domain/auth/auth.errors';
-import { authenticatedUserSchema } from '../auth/schema';
+import { authenticatedUserSchema } from './schema';
 
 const meRoute: FastifyPluginAsyncZod = async (app) => {
   app.get(
