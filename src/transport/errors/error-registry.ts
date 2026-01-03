@@ -1,5 +1,6 @@
 import type { DomainError } from '../../domain/shared/domain-error';
 import { authErrorMap } from './auth.error-map';
+import { boardErrorMap } from './board.error-map';
 import { workspaceErrorMap } from './workspace.error-map';
 
 export const errorRegistry = new Map<
@@ -8,7 +9,5 @@ export const errorRegistry = new Map<
 >([
   ...authErrorMap,
   ...workspaceErrorMap,
-  // Future domain error maps go here:
-  // ...userErrorMap,
-  // ...taskErrorMap,
+  ...boardErrorMap,
 ]);

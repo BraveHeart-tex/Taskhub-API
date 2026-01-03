@@ -7,7 +7,7 @@ import {
   workspaces,
 } from '../db/schema';
 
-export class WorkspaceRepo {
+export class WorkspaceRepository {
   constructor(private readonly db: Db) {}
 
   async create(values: WorkspaceCreateInput) {

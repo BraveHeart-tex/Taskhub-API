@@ -8,16 +8,16 @@ import {
   WorkspaceNameAlreadyExistsError,
   WorkspaceNotFoundError,
 } from '../domain/workspace/workspace.errors';
-import type { WorkspaceRepo } from './workspace.repo';
+import type { WorkspaceRepository } from './workspace.repo';
 
 export class WorkspaceService {
-  constructor(private readonly workspaceRepo: WorkspaceRepo) {}
+  constructor(private readonly workspaceRepo: WorkspaceRepository) {}
 
   async create(values: WorkspaceCreateInput) {
     const existing = await this.workspaceRepo.findByOwnerAndName(
       values.ownerId,
       values.name
-    );
+    )
 
     if (existing) {
       throw new WorkspaceNameAlreadyExistsError();

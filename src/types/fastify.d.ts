@@ -4,11 +4,14 @@ import type { Db } from '../db/client';
 import type { AuthenticatedUser } from '../domain/authenticated-user';
 import type { SessionContext } from '../domain/session-context';
 import type { WorkspaceService } from '../workspace/workspace.service';
+import type { BoardService } from '../board/board.service';
+
 
 declare module 'fastify' {
   interface FastifyInstance {
     db: Db;
     authService: AuthService;
+    boardService: BoardService;
     workspaceService: WorkspaceService;
     config: {
       NODE_ENV: string;

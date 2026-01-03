@@ -39,9 +39,28 @@ export const workspaces = pgTable('workspaces', {
     .$onUpdateFn(() => sql`NOW()`),
 });
 
+export const boards = pgTable("boards", {
+    id: uuid('id').primaryKey().defaultRandom(),
+    workspaceId: uuid('workspace_id')
+        .notNull()
+        .references(() => workspaces.id, { onDelete: 'cascade' }),
+    title: text('title').notNull(),
+    createdBy: uuid('created_by')
+        .notNull()
+        .references(() => users.id, { onDelete: 'set null' }),
+    createdAt: customTimestamp('created_at')
+        .$defaultFn(() => sql`NOW()`)
+        .notNull(),
+    updatedAt: customTimestamp('updated_at')
+        .$defaultFn(() => sql`NOW()`)
+        .notNull()
+        .$onUpdateFn(() => sql`NOW()`),
+})
+
 export type User = typeof users.$inferSelect;
 export type Session = typeof sessions.$inferSelect;
 export type Workspace = typeof workspaces.$inferSelect;
+export type Board = typeof boards.$inferSelect;
 
 export type UserCreateInput = typeof users.$inferInsert;
 
@@ -49,3 +68,6 @@ export type SessionCreateInput = typeof sessions.$inferInsert;
 
 export type WorkspaceCreateInput = typeof workspaces.$inferInsert;
 export type WorkspaceUpdateInput = Pick<Workspace, 'name'>;
+
+export type BoardCreateInput = typeof boards.$inferInsert;
+export type BoardUpdateInput = Pick<Board, 'title'>;

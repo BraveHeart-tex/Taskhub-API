@@ -15,6 +15,13 @@
       "when": 1767385605689,
       "tag": "0001_long_wolf_cub",
       "breakpoints": true
+    },
+    {
+      "idx": 2,
+      "version": "7",
+      "when": 1767466254969,
+      "tag": "0002_lame_doomsday",
+      "breakpoints": true
     }
   ]
 }
