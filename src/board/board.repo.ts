@@ -1,8 +1,9 @@
-import { and, eq } from 'drizzle-orm';
+import { and, eq, getTableColumns } from 'drizzle-orm';
 import type { Db } from '../db/client';
 import {
   type BoardCreateInput,
   type BoardUpdateInput,
+  boardMembers,
   boards,
 } from '../db/schema';
 
@@ -40,5 +41,17 @@ export class BoardRepository {
       .returning();
 
     return updatedBoard;
+  }
+  async findByUserId(userId: string) {
+    return this.db
+      .select(getTableColumns(boards))
+      .from(boards)
+      .innerJoin(
+        boardMembers,
+        and(
+          eq(boardMembers.boardId, boards.id),
+          eq(boardMembers.userId, userId)
+        )
+      );
   }
 }

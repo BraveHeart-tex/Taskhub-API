@@ -1,15 +1,14 @@
 import type { FastifyPluginAsyncZod } from 'fastify-type-provider-zod';
 import { UnauthenticatedError } from '../../domain/auth/auth.errors';
-import { boardSchema, createBoardBodySchema } from './schema';
+import { boardSchema } from './schema';
 
 const route: FastifyPluginAsyncZod = async (app) => {
-  app.post(
+  app.get(
     '/',
     {
       schema: {
-        body: createBoardBodySchema,
         response: {
-          201: boardSchema,
+          201: boardSchema.array(),
         },
       },
     },
@@ -18,11 +17,7 @@ const route: FastifyPluginAsyncZod = async (app) => {
         throw new UnauthenticatedError();
       }
 
-      const result = await app.boardService.create({
-        createdBy: request.user.id,
-        workspaceId: request.body.workspaceId,
-        title: request.body.title,
-      });
+      const result = await app.boardService.getUserBoards(request.user.id);
 
       return reply.status(201).send(result);
     }

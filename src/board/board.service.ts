@@ -1,4 +1,5 @@
-import type { Board, BoardCreateInput, BoardUpdateInput } from '../db/schema';
+import type { BoardMemberRepository } from '../board-member/board-member.repo';
+import type { Board, BoardCreateInput } from '../db/schema';
 import { UnauthorizedError } from '../domain/auth/auth.errors';
 import {
   BoardNotFoundError,
@@ -9,12 +10,14 @@ import { WorkspaceNotFoundError } from '../domain/workspace/workspace.errors';
 import type { WorkspaceRepository } from '../workspace/workspace.repo';
 import type { BoardRepository } from './board.repo';
 
+// TODO: Handle transactions starting from create board
 export class BoardService {
   constructor(
     private readonly boardRepo: BoardRepository,
+    private readonly boardMemberRepo: BoardMemberRepository,
     private readonly workspaceRepo: WorkspaceRepository
   ) {}
-  async createBoard(values: BoardCreateInput): Promise<Board> {
+  async create(values: BoardCreateInput): Promise<Board> {
     const workspace = await this.workspaceRepo.findById(values.workspaceId);
     if (!workspace) {
       throw new WorkspaceNotFoundError();
@@ -36,7 +39,15 @@ export class BoardService {
       throw new BoardTitleAlreadyExistsError();
     }
 
-    return this.boardRepo.create(values);
+    const board = await this.boardRepo.create(values);
+
+    await this.boardMemberRepo.create({
+      boardId: board.id,
+      userId: values.createdBy,
+      role: 'owner',
+    });
+
+    return board;
   }
   async delete(boardId: string, currentUserId: string): Promise<void> {
     const board = await this.boardRepo.findById(boardId);
@@ -77,5 +88,9 @@ export class BoardService {
     }
 
     return this.boardRepo.update(boardId, { title });
+  }
+  async getUserBoards(userId: string): Promise<Board[]> {
+    const boards = await this.boardRepo.findByUserId(userId);
+    return boards;
   }
 }
