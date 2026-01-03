@@ -18,7 +18,7 @@ const route: FastifyPluginAsyncZod = async (app) => {
       const workspaceId = request.params.id;
       const currentUserId = request.user.id;
 
-      await app.workspace.delete(currentUserId, workspaceId);
+      await app.workspaceService.delete(currentUserId, workspaceId);
 
       return reply.status(204).send();
     }

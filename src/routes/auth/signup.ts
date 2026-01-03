@@ -20,7 +20,7 @@ const signUpRoute: FastifyPluginAsyncZod = async (app) => {
         throw new AlreadyLoggedInError();
       }
 
-      const result = await app.auth.signup(
+      const result = await app.authService.signup(
         request.body.email,
         request.body.password
       );

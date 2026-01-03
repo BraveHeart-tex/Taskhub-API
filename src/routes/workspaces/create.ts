@@ -20,7 +20,7 @@ const route: FastifyPluginAsyncZod = async (app) => {
 
       const { name } = request.body;
 
-      const workspace = await app.workspace.create({
+      const workspace = await app.workspaceService.create({
         name,
         ownerId: request.user.id,
       });

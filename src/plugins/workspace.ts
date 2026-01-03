@@ -1,8 +1,8 @@
 import fp from 'fastify-plugin';
-import { createWorkspaceRepo } from '../workspace/workspace.repo';
-import { createWorkspaceService } from '../workspace/workspace.service';
+import { WorkspaceRepo } from '../workspace/workspace.repo';
+import { WorkspaceService } from '../workspace/workspace.service';
 
 export default fp(async (app) => {
-  const workspaceService = createWorkspaceService(createWorkspaceRepo(app.db));
-  app.decorate('workspace', workspaceService);
+  const workspaceService = new WorkspaceService(new WorkspaceRepo(app.db));
+  app.decorate('workspaceService', workspaceService);
 });

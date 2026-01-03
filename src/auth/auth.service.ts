@@ -3,7 +3,6 @@ import {
   EmailAlreadyExistsError,
   InvalidCredentialsError,
 } from '../domain/auth/auth.errors';
-import type { AuthService } from '../domain/auth/auth.service';
 import { toAuthenticatedUser, toSessionContext } from './auth.mappers';
 import type { SessionValidationResult } from './auth.types';
 import { hashPassword, verifyPassword } from './password';
@@ -15,120 +14,126 @@ import {
 import type { SessionRepo } from './session.repo';
 import type { UserRepo } from './user.repo';
 
-export function createAuthService(
-  userRepo: UserRepo,
-  sessionRepo: SessionRepo
-): AuthService {
-  return {
-    async validateSession(
-      token: string | undefined
-    ): Promise<SessionValidationResult | null> {
-      if (!token) return null;
+export class AuthService {
+  constructor(
+    private readonly userRepo: UserRepo,
+    private readonly sessionRepo: SessionRepo
+  ) {}
 
-      const [sessionId, secret] = token.split('.');
+  async validateSession(
+    token: string | undefined
+  ): Promise<SessionValidationResult | null> {
+    if (!token) return null;
 
-      if (!sessionId || !secret) return null;
+    const [sessionId, secret] = token.split('.');
 
-      const session = await sessionRepo.findById(sessionId);
-      if (!session) return null;
+    if (!sessionId || !secret) return null;
 
-      if (new Date(session.expiresAt) <= new Date()) {
-        await sessionRepo.delete(session.id);
-        return null;
-      }
+    const session = await this.sessionRepo.findById(sessionId);
+    if (!session) return null;
 
-      const storedHash = Buffer.from(session.secretHash, 'base64');
-      const computedHash = Buffer.from(await hashSessionSecret(secret));
+    if (new Date(session.expiresAt) <= new Date()) {
+      await this.sessionRepo.delete(session.id);
+      return null;
+    }
 
-      if (storedHash.length !== computedHash.length) {
-        await sessionRepo.delete(session.id);
-        return null;
-      }
+    const storedHash = Buffer.from(session.secretHash, 'base64');
+    const computedHash = Buffer.from(await hashSessionSecret(secret));
 
-      if (!timingSafeEqual(storedHash, computedHash)) {
-        return null;
-      }
+    if (storedHash.length !== computedHash.length) {
+      await this.sessionRepo.delete(session.id);
+      return null;
+    }
 
-      const user = await userRepo.findById(session.userId);
-      if (!user) return null;
+    if (!timingSafeEqual(storedHash, computedHash)) {
+      return null;
+    }
 
-      const newExpiresAt = getSessionExpiry(30);
-      await sessionRepo.updateExpiresAt(session.id, newExpiresAt.toISOString());
+    const user = await this.userRepo.findById(session.userId);
+    if (!user) return null;
 
-      const updatedSession = {
-        ...session,
-        expiresAt: newExpiresAt.toISOString(),
-      };
+    const newExpiresAt = getSessionExpiry(30);
+    await this.sessionRepo.updateExpiresAt(
+      session.id,
+      newExpiresAt.toISOString()
+    );
 
-      return {
-        user: toAuthenticatedUser(user),
-        session: toSessionContext(updatedSession),
-      };
-    },
-    async login(email: string, password: string) {
-      const user = await userRepo.findByEmail(email);
-      if (!user) {
-        throw new InvalidCredentialsError();
-      }
+    const updatedSession = {
+      ...session,
+      expiresAt: newExpiresAt.toISOString(),
+    };
 
-      const isPasswordValid = await verifyPassword(user.passwordHash, password);
-      if (!isPasswordValid) {
-        throw new InvalidCredentialsError();
-      }
+    return {
+      user: toAuthenticatedUser(user),
+      session: toSessionContext(updatedSession),
+    };
+  }
 
-      const sessionId = generateSecureRandomString();
-      const sessionSecret = generateSecureRandomString();
-      const secretHash = Buffer.from(
-        await hashSessionSecret(sessionSecret)
-      ).toString('base64');
-      const sessionExpiresAt = getSessionExpiry(30);
+  async login(email: string, password: string) {
+    const user = await this.userRepo.findByEmail(email);
+    if (!user) {
+      throw new InvalidCredentialsError();
+    }
 
-      await sessionRepo.create({
-        id: sessionId,
-        secretHash,
-        userId: user.id,
-        expiresAt: sessionExpiresAt.toISOString(),
-      });
+    const isPasswordValid = await verifyPassword(user.passwordHash, password);
+    if (!isPasswordValid) {
+      throw new InvalidCredentialsError();
+    }
 
-      return {
-        user: toAuthenticatedUser(user),
-        sessionId,
-        sessionSecret,
-      };
-    },
-    async signup(email: string, password: string) {
-      const existingUser = await userRepo.findByEmail(email);
-      if (existingUser) {
-        throw new EmailAlreadyExistsError();
-      }
+    const sessionId = generateSecureRandomString();
+    const sessionSecret = generateSecureRandomString();
+    const secretHash = Buffer.from(
+      await hashSessionSecret(sessionSecret)
+    ).toString('base64');
+    const sessionExpiresAt = getSessionExpiry(30);
 
-      const passwordHash = await hashPassword(password);
-      const user = await userRepo.create({
-        email,
-        passwordHash,
-      });
+    await this.sessionRepo.create({
+      id: sessionId,
+      secretHash,
+      userId: user.id,
+      expiresAt: sessionExpiresAt.toISOString(),
+    });
 
-      const sessionId = generateSecureRandomString();
-      const sessionSecret = generateSecureRandomString();
-      const secretHash = Buffer.from(
-        await hashSessionSecret(sessionSecret)
-      ).toString('base64');
+    return {
+      user: toAuthenticatedUser(user),
+      sessionId,
+      sessionSecret,
+    };
+  }
 
-      await sessionRepo.create({
-        id: sessionId,
-        secretHash,
-        userId: user.id,
-        expiresAt: getSessionExpiry(30).toISOString(),
-      });
+  async signup(email: string, password: string) {
+    const existingUser = await this.userRepo.findByEmail(email);
+    if (existingUser) {
+      throw new EmailAlreadyExistsError();
+    }
 
-      return {
-        user: toAuthenticatedUser(user),
-        sessionId,
-        sessionSecret,
-      };
-    },
-    async logout(sessionId: string, userId: string) {
-      await sessionRepo.deleteByIdAndUserId(sessionId, userId);
-    },
-  };
+    const passwordHash = await hashPassword(password);
+    const user = await this.userRepo.create({
+      email,
+      passwordHash,
+    });
+
+    const sessionId = generateSecureRandomString();
+    const sessionSecret = generateSecureRandomString();
+    const secretHash = Buffer.from(
+      await hashSessionSecret(sessionSecret)
+    ).toString('base64');
+
+    await this.sessionRepo.create({
+      id: sessionId,
+      secretHash,
+      userId: user.id,
+      expiresAt: getSessionExpiry(30).toISOString(),
+    });
+
+    return {
+      user: toAuthenticatedUser(user),
+      sessionId,
+      sessionSecret,
+    };
+  }
+
+  async logout(sessionId: string, userId: string) {
+    await this.sessionRepo.deleteByIdAndUserId(sessionId, userId);
+  }
 }

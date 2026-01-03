@@ -26,7 +26,7 @@ const route: FastifyPluginAsyncZod = async (app) => {
       const { id } = request.params;
       const { name } = request.body;
 
-      const updatedWorkspace = await app.workspace.update({
+      const updatedWorkspace = await app.workspaceService.update({
         workspaceId: id,
         changes: { name },
         currentUserId: request.user.id,

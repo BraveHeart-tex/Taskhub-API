@@ -8,7 +8,7 @@ const logoutRoute: FastifyPluginAsyncZod = async (app) => {
         throw new UnauthenticatedError();
       }
 
-      await app.auth.logout(req.session.id, req.user.id);
+      await app.authService.logout(req.session.id, req.user.id);
 
       reply.clearCookie('session_token');
 
