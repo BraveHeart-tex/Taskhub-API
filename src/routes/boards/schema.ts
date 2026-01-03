@@ -17,3 +17,11 @@ export const boardSchema = z.object({
 export const deleteBoardParamsSchema = z.object({
   id: z.uuid(),
 });
+
+export const updateBoardParamsSchema = z.object({
+  id: z.uuid(),
+});
+
+export const updateBoardBodySchema = z.object({
+  title: z.string().min(1).max(100),
+});

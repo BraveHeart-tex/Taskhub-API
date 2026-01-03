@@ -1,4 +1,4 @@
-import type { Board, BoardCreateInput } from '../db/schema';
+import type { Board, BoardCreateInput, BoardUpdateInput } from '../db/schema';
 import { UnauthorizedError } from '../domain/auth/auth.errors';
 import {
   BoardNotFoundError,
@@ -50,5 +50,32 @@ export class BoardService {
 
     await this.boardRepo.delete(boardId);
   }
-  async update() {}
+  async update(
+    currentUserId: string,
+    boardId: string,
+    changes: { title: string }
+  ) {
+    const board = await this.boardRepo.findById(boardId);
+    if (!board) {
+      throw new BoardNotFoundError();
+    }
+
+    if (board.createdBy !== currentUserId) {
+      throw new UnauthorizedError();
+    }
+
+    const title = changes.title.trim();
+    if (!title) throw new InvalidBoardTitleError();
+
+    const existing = await this.boardRepo.findByWorkspaceAndTitle(
+      board.workspaceId,
+      title
+    );
+
+    if (existing && existing.id !== boardId) {
+      throw new BoardTitleAlreadyExistsError();
+    }
+
+    return this.boardRepo.update(boardId, { title });
+  }
 }

@@ -1,6 +1,10 @@
 import { and, eq } from 'drizzle-orm';
 import type { Db } from '../db/client';
-import { type BoardCreateInput, boards } from '../db/schema';
+import {
+  type BoardCreateInput,
+  type BoardUpdateInput,
+  boards,
+} from '../db/schema';
 
 export class BoardRepository {
   constructor(private readonly db: Db) {}
@@ -27,5 +31,14 @@ export class BoardRepository {
   }
   async delete(boardId: string) {
     await this.db.delete(boards).where(eq(boards.id, boardId));
+  }
+  async update(boardId: string, changes: BoardUpdateInput) {
+    const [updatedBoard] = await this.db
+      .update(boards)
+      .set(changes)
+      .where(eq(boards.id, boardId))
+      .returning();
+
+    return updatedBoard;
   }
 }
