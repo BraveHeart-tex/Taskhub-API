@@ -70,7 +70,7 @@ export const boardMembers = pgTable(
     userId: uuid('user_id')
       .notNull()
       .references(() => users.id, { onDelete: 'cascade' }),
-    role: boardMemberRoleEnum(),
+    role: boardMemberRoleEnum().notNull().default('member'),
     createdAt: customTimestamp('created_at')
       .$defaultFn(() => sql`NOW()`)
       .notNull(),
