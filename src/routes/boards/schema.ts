@@ -15,11 +15,11 @@ export const boardSchema = z.object({
 });
 
 export const deleteBoardParamsSchema = z.object({
-  id: z.uuid(),
+  boardId: z.uuid(),
 });
 
 export const updateBoardParamsSchema = z.object({
-  id: z.uuid(),
+  boardId: z.uuid(),
 });
 
 export const updateBoardBodySchema = z.object({

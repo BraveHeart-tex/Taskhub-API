@@ -1,14 +1,14 @@
 import type { FastifyPluginAsyncZod } from 'fastify-type-provider-zod';
-import { UnauthenticatedError } from '../../domain/auth/auth.errors';
+import { UnauthenticatedError } from '../../../domain/auth/auth.errors';
 import {
   boardSchema,
   updateBoardBodySchema,
   updateBoardParamsSchema,
-} from './schema';
+} from '../schema';
 
 const route: FastifyPluginAsyncZod = async (app) => {
   app.patch(
-    '/:id',
+    '/',
     {
       schema: {
         params: updateBoardParamsSchema,
@@ -23,7 +23,7 @@ const route: FastifyPluginAsyncZod = async (app) => {
         throw new UnauthenticatedError();
       }
 
-      const { id: boardId } = request.params;
+      const { boardId } = request.params;
 
       const result = await app.boardService.update(
         request.user.id,
