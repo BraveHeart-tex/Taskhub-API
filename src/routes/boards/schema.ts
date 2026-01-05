@@ -14,14 +14,6 @@ export const boardSchema = z.object({
   updatedAt: z.iso.datetime(),
 });
 
-export const deleteBoardParamsSchema = z.object({
-  boardId: z.uuid(),
-});
-
-export const updateBoardParamsSchema = z.object({
-  boardId: z.uuid(),
-});
-
 export const updateBoardBodySchema = z.object({
   title: z.string().min(1).max(100),
 });

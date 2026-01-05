@@ -1,14 +1,13 @@
 import type { FastifyPluginAsyncZod } from 'fastify-type-provider-zod';
 import { requireAuth } from '../../../http/guards/require-auth';
-import { deleteBoardParamsSchema } from '../schema';
+import { boardIdParamsSchema } from './schema';
 
 const route: FastifyPluginAsyncZod = async (app) => {
   app.delete(
     '/',
     {
       schema: {
-        // TODO: Check if we needs this on every /boardId route or once?
-        params: deleteBoardParamsSchema,
+        params: boardIdParamsSchema,
       },
     },
     async (request, reply) => {
