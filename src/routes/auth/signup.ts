@@ -1,14 +1,14 @@
 import type { FastifyPluginAsyncZod } from 'fastify-type-provider-zod';
 import { AlreadyLoggedInError } from '../../domain/auth/auth.errors';
 import { apiErrorSchema } from '../../shared/schemas/error';
-import { authenticatedUserSchema, loginBodySchema } from './schema';
+import { authenticatedUserSchema, signUpBodySchema } from './schema';
 
 const signUpRoute: FastifyPluginAsyncZod = async (app) => {
   app.post(
     '/signup',
     {
       schema: {
-        body: loginBodySchema,
+        body: signUpBodySchema,
         response: {
           201: authenticatedUserSchema,
           409: apiErrorSchema,
@@ -20,10 +20,7 @@ const signUpRoute: FastifyPluginAsyncZod = async (app) => {
         throw new AlreadyLoggedInError();
       }
 
-      const result = await app.authService.signup(
-        request.body.email,
-        request.body.password
-      );
+      const result = await app.authService.signup(request.body);
 
       response.setCookie(
         'session_token',
@@ -36,11 +33,7 @@ const signUpRoute: FastifyPluginAsyncZod = async (app) => {
         }
       );
 
-      return response.status(201).send({
-        id: result.user.id,
-        email: result.user.email,
-        createdAt: result.user.createdAt,
-      });
+      return response.status(201).send(result.user);
     }
   );
 };

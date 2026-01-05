@@ -40,6 +40,7 @@ const loginRoute: FastifyPluginAsyncZod = async (app) => {
       return response.status(201).send({
         id: result.user.id,
         email: result.user.email,
+        fullName: result.user.fullName,
         createdAt: result.user.createdAt,
       });
     }

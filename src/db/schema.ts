@@ -4,6 +4,7 @@ import { customTimestamp } from './timestamp';
 
 export const users = pgTable('users', {
   id: uuid('id').primaryKey().defaultRandom(),
+  fullName: text('full_name').notNull().default(''),
   email: text('email').notNull().unique(),
   passwordHash: text('password_hash').notNull(),
   createdAt: customTimestamp('created_at')

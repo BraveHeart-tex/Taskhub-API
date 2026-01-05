@@ -3,6 +3,7 @@ import {
   EmailAlreadyExistsError,
   InvalidCredentialsError,
 } from '../domain/auth/auth.errors';
+import type { SignUpInput } from '../routes/auth/schema';
 import { toAuthenticatedUser, toSessionContext } from './auth.mappers';
 import type { SessionValidationResult } from './auth.types';
 import { hashPassword, verifyPassword } from './password';
@@ -101,16 +102,17 @@ export class AuthService {
     };
   }
 
-  async signup(email: string, password: string) {
-    const existingUser = await this.userRepo.findByEmail(email);
+  async signup(values: SignUpInput) {
+    const existingUser = await this.userRepo.findByEmail(values.email);
     if (existingUser) {
       throw new EmailAlreadyExistsError();
     }
 
-    const passwordHash = await hashPassword(password);
+    const passwordHash = await hashPassword(values.password);
     const user = await this.userRepo.create({
-      email,
+      email: values.email,
       passwordHash,
+      fullName: values.fullName,
     });
 
     const sessionId = generateSecureRandomString();
