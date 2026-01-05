@@ -43,6 +43,13 @@
       "when": 1767612274352,
       "tag": "0005_left_proemial_gods",
       "breakpoints": true
+    },
+    {
+      "idx": 6,
+      "version": "7",
+      "when": 1767642949713,
+      "tag": "0006_breezy_husk",
+      "breakpoints": true
     }
   ]
 }

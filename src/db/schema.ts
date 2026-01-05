@@ -1,5 +1,12 @@
 import { sql } from 'drizzle-orm';
-import { pgEnum, pgTable, text, uniqueIndex, uuid } from 'drizzle-orm/pg-core';
+import {
+  doublePrecision,
+  pgEnum,
+  pgTable,
+  text,
+  uniqueIndex,
+  uuid,
+} from 'drizzle-orm/pg-core';
 import { customTimestamp } from './timestamp';
 
 export const users = pgTable('users', {
@@ -87,11 +94,37 @@ export const boardMembers = pgTable(
   ]
 );
 
+export const lists = pgTable(
+  'lists',
+  {
+    id: uuid('id').primaryKey().defaultRandom(),
+    boardId: uuid('board_id')
+      .notNull()
+      .references(() => boards.id, { onDelete: 'cascade' }),
+    title: text('title').notNull(),
+    position: doublePrecision('position').notNull(),
+    createdAt: customTimestamp('created_at')
+      .$defaultFn(() => sql`NOW()`)
+      .notNull(),
+    updatedAt: customTimestamp('updated_at')
+      .$defaultFn(() => sql`NOW()`)
+      .notNull()
+      .$onUpdateFn(() => sql`NOW()`),
+  },
+  (table) => [
+    uniqueIndex('lists_board_id_position_key').on(
+      table.boardId,
+      table.position
+    ),
+  ]
+);
+
 export type User = typeof users.$inferSelect;
 export type Session = typeof sessions.$inferSelect;
 export type Workspace = typeof workspaces.$inferSelect;
 export type Board = typeof boards.$inferSelect;
 export type BoardMember = typeof boardMembers.$inferSelect;
+export type ListRow = typeof lists.$inferSelect;
 
 export type UserCreateInput = typeof users.$inferInsert;
 
@@ -105,3 +138,6 @@ export type BoardUpdateInput = Pick<Board, 'title'>;
 
 export type BoardMemberCreateInput = typeof boardMembers.$inferInsert;
 export type BoardMemberUpdateInput = Pick<BoardMember, 'role'>;
+
+export type ListRowCreateInput = typeof lists.$inferInsert;
+export type ListRowUpdateInput = Pick<ListRow, 'title' | 'position'>;

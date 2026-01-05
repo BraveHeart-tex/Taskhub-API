@@ -1,4 +1,5 @@
 import 'fastify';
+import type { ListService } from '@/list/list.service';
 import type { AuthService } from '../auth/auth.service';
 import type { BoardService } from '../board/board.service';
 import type { BoardMemberService } from '../board-member/board-member.service';
@@ -14,6 +15,7 @@ declare module 'fastify' {
     boardService: BoardService;
     boardMemberService: BoardMemberService;
     workspaceService: WorkspaceService;
+    listService: ListService;
     config: {
       NODE_ENV: string;
       PORT: number;

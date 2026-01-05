@@ -32,7 +32,7 @@ export class BoardMemberService {
       currentUserId
     );
     if (!isMember) {
-      throw new BoardMemberNotFoundError();
+      throw new UnauthorizedError();
     }
 
     return this.boardMemberRepo.list(boardId);
