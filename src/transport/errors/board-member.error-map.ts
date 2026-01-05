@@ -1,4 +1,7 @@
-import { BoardMemberNotFoundError } from '../../domain/board/board-member/board-member.errors';
+import {
+  BoardMemberAlreadyExistsError,
+  BoardMemberNotFoundError,
+} from '../../domain/board/board-member/board-member.errors';
 import type { DomainError } from '../../domain/shared/domain-error';
 
 export const boardMemberErrorMap = new Map<
@@ -8,5 +11,9 @@ export const boardMemberErrorMap = new Map<
   [
     BoardMemberNotFoundError,
     { status: 404, message: 'Board member not found' },
+  ],
+  [
+    BoardMemberAlreadyExistsError,
+    { status: 409, message: 'Board member already exists' },
   ],
 ]);

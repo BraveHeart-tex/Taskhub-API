@@ -13,11 +13,11 @@ import {
   hashSessionSecret,
 } from './session';
 import type { SessionRepo } from './session.repo';
-import type { UserRepo } from './user.repo';
+import type { UserRepository } from './user.repo';
 
 export class AuthService {
   constructor(
-    private readonly userRepo: UserRepo,
+    private readonly userRepo: UserRepository,
     private readonly sessionRepo: SessionRepo
   ) {}
 

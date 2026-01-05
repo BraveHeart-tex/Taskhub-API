@@ -7,3 +7,11 @@ export class BoardMemberNotFoundError extends DomainError {
     this.name = 'BoardMemberNotFoundError';
   }
 }
+
+export class BoardMemberAlreadyExistsError extends DomainError {
+  readonly code = 'BOARD_MEMBER_ALREADY_EXISTS';
+  constructor() {
+    super(`Board member already exists`);
+    this.name = 'BoardMemberAlreadyExistsError';
+  }
+}

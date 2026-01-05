@@ -1,4 +1,4 @@
-import { eq, sql } from 'drizzle-orm';
+import { and, eq, sql } from 'drizzle-orm';
 import { useDb } from '../db/context';
 import { type BoardMemberCreateInput, boardMembers, users } from '../db/schema';
 
@@ -35,6 +35,26 @@ export class BoardMemberRepository {
         exists: boolean;
       }>`SELECT EXISTS(SELECT 1 FROM ${boardMembers} WHERE ${boardMembers.boardId} = ${boardId} AND ${boardMembers.userId} = ${userId})`
     );
-    return result.rows[0].exists;
+    return result.rows[0]?.exists;
+  }
+  async findByIdAndUserId(boardId: string, userId: string) {
+    const db = useDb();
+    const [boardMember] = await db
+      .select({
+        boardId: boardMembers.boardId,
+        user: {
+          id: users.id,
+          email: users.email,
+          fullName: users.fullName,
+        },
+        role: boardMembers.role,
+        joinedAt: boardMembers.createdAt,
+      })
+      .from(boardMembers)
+      .innerJoin(users, eq(boardMembers.userId, users.id))
+      .where(
+        and(eq(boardMembers.boardId, boardId), eq(boardMembers.userId, userId))
+      );
+    return boardMember;
   }
 }
