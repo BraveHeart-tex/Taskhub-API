@@ -1,14 +1,12 @@
 import type { FastifyPluginAsyncZod } from 'fastify-type-provider-zod';
-import { UnauthenticatedError } from '../../domain/auth/auth.errors';
+import { requireAuth } from '../../http/guards/require-auth';
 
 const logoutRoute: FastifyPluginAsyncZod = async (app) => {
   app.delete('/logout', {
     handler: async (req, reply) => {
-      if (!req.user || !req.session?.id) {
-        throw new UnauthenticatedError();
-      }
+      const { user, session } = requireAuth(req);
 
-      await app.authService.logout(req.session.id, req.user.id);
+      await app.authService.logout(session.id, user.id);
 
       reply.clearCookie('session_token');
 

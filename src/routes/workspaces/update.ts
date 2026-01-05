@@ -1,5 +1,5 @@
 import type { FastifyPluginAsyncZod } from 'fastify-type-provider-zod';
-import { UnauthenticatedError } from '../../domain/auth/auth.errors';
+import { requireAuth } from '../../http/guards/require-auth';
 import {
   updateWorkspaceParamsSchema,
   updateWorkspaceSchema,
@@ -19,9 +19,7 @@ const route: FastifyPluginAsyncZod = async (app) => {
       },
     },
     async (request, reply) => {
-      if (!request.user || !request.session?.id) {
-        throw new UnauthenticatedError();
-      }
+      const { user } = requireAuth(request);
 
       const { id } = request.params;
       const { name } = request.body;
@@ -29,7 +27,7 @@ const route: FastifyPluginAsyncZod = async (app) => {
       const updatedWorkspace = await app.workspaceService.update({
         workspaceId: id,
         changes: { name },
-        currentUserId: request.user.id,
+        currentUserId: user.id,
       });
 
       reply.status(200).send(updatedWorkspace);

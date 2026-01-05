@@ -1,5 +1,5 @@
 import type { FastifyPluginAsyncZod } from 'fastify-type-provider-zod';
-import { UnauthenticatedError } from '../../domain/auth/auth.errors';
+import { requireAuth } from '../../http/guards/require-auth';
 import { authenticatedUserSchema } from './schema';
 
 const meRoute: FastifyPluginAsyncZod = async (app) => {
@@ -13,11 +13,9 @@ const meRoute: FastifyPluginAsyncZod = async (app) => {
       },
     },
     async (req, reply) => {
-      if (!req.user || !req.session?.id) {
-        throw new UnauthenticatedError();
-      }
+      const { user } = requireAuth(req);
 
-      return reply.status(200).send(req.user);
+      return reply.status(200).send(user);
     }
   );
 };

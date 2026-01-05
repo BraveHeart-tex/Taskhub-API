@@ -1,5 +1,5 @@
 import type { FastifyPluginAsyncZod } from 'fastify-type-provider-zod';
-import { UnauthenticatedError } from '../../domain/auth/auth.errors';
+import { requireAuth } from '../../http/guards/require-auth';
 import { boardSchema, createBoardBodySchema } from './schema';
 
 const route: FastifyPluginAsyncZod = async (app) => {
@@ -14,12 +14,10 @@ const route: FastifyPluginAsyncZod = async (app) => {
       },
     },
     async (request, reply) => {
-      if (!request.user || !request.session?.id) {
-        throw new UnauthenticatedError();
-      }
+      const { user } = requireAuth(request);
 
       const result = await app.boardService.create({
-        createdBy: request.user.id,
+        createdBy: user.id,
         workspaceId: request.body.workspaceId,
         title: request.body.title,
       });
