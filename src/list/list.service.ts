@@ -3,7 +3,10 @@ import type { BoardMemberRepository } from '@/board-member/board-member.repo';
 import { withTransaction } from '@/db/transaction';
 import { UnauthorizedError } from '@/domain/auth/auth.errors';
 import { BoardNotFoundError } from '@/domain/board/board.errors';
-import { ListNotFoundError } from '@/domain/board/list/list.errors';
+import {
+  InvalidListTitleError,
+  ListNotFoundError,
+} from '@/domain/board/list/list.errors';
 import type { ListRepository } from './list.repo';
 
 const LIST_POSITION_GAP = 1000;
@@ -44,6 +47,44 @@ export class ListService {
         title,
         position,
       });
+    });
+  }
+  async updateList({
+    currentUserId,
+    boardId,
+    listId,
+    title,
+  }: {
+    currentUserId: string;
+    boardId: string;
+    listId: string;
+    title: string;
+  }) {
+    return withTransaction(async () => {
+      const board = await this.boardRepository.findById(boardId);
+      if (!board) {
+        throw new BoardNotFoundError();
+      }
+
+      const isMember = await this.boardMemberRepository.isMember(
+        boardId,
+        currentUserId
+      );
+      if (!isMember) {
+        throw new UnauthorizedError();
+      }
+
+      const list = await this.listRepository.findById(listId);
+      if (!list || list.boardId !== boardId) {
+        throw new ListNotFoundError();
+      }
+
+      const nextTitle = title.trim();
+      if (!nextTitle) {
+        throw new InvalidListTitleError();
+      }
+
+      return this.listRepository.update(listId, { title: nextTitle });
     });
   }
   async deleteList({

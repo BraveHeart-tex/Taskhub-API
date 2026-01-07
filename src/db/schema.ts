@@ -140,4 +140,4 @@ export type BoardMemberCreateInput = typeof boardMembers.$inferInsert;
 export type BoardMemberUpdateInput = Pick<BoardMember, 'role'>;
 
 export type ListRowCreateInput = typeof lists.$inferInsert;
-export type ListRowUpdateInput = Pick<ListRow, 'title' | 'position'>;
+export type ListRowUpdateInput = Pick<ListRow, 'title'>;
