@@ -27,7 +27,7 @@ export class ListRepository {
     const [row] = await db.select().from(lists).where(eq(lists.id, listId));
     return row;
   }
-  async update(listId: string, values: Partial<ListUpdate>) {
+  async update(listId: string, values: ListUpdate) {
     const db = useDb();
     await db.update(lists).set(values).where(eq(lists.id, listId));
   }

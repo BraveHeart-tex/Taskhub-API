@@ -3,7 +3,10 @@ import {
   EmailAlreadyExistsError,
   InvalidCredentialsError,
 } from '@/domain/auth/auth.errors';
-import type { SessionValidationResult } from '@/domain/auth/auth.types';
+import type {
+  SessionValidationResult,
+  SignUpInput,
+} from '@/domain/auth/auth.types';
 import { toAuthenticatedUser, toSessionContext } from '@/lib/auth';
 import { hashPassword, verifyPassword } from '@/lib/password';
 import {
@@ -13,7 +16,6 @@ import {
 } from '@/lib/session';
 import type { SessionRepo } from '@/repositories/session.repo';
 import type { UserRepository } from '@/repositories/user.repo';
-import type { SignUpInput } from '@/types/auth.types';
 
 export class AuthService {
   constructor(
