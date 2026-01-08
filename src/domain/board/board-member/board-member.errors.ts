@@ -1,4 +1,4 @@
-import { DomainError } from '../../shared/domain-error';
+import { DomainError } from '../../domain-error';
 
 export class BoardMemberNotFoundError extends DomainError {
   readonly code = 'BOARD_MEMBER_NOT_FOUND';

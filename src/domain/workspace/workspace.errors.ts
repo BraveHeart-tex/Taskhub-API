@@ -1,4 +1,4 @@
-import { DomainError } from '../shared/domain-error';
+import { DomainError } from '../domain-error';
 
 export class WorkspaceNameAlreadyExistsError extends DomainError {
   readonly code = 'WORKSPACE_NAME_ALREADY_EXISTS';

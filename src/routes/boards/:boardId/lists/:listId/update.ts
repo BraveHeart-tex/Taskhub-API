@@ -1,5 +1,5 @@
 import type { FastifyPluginAsyncZod } from 'fastify-type-provider-zod';
-import { requireAuth } from '@/http/guards/require-auth';
+import { requireAuth } from '@/lib/require-auth';
 import { boardListPathParamsSchema, updateBoardListSchema } from './schema';
 
 const route: FastifyPluginAsyncZod = async (app) => {

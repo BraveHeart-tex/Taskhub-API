@@ -1,5 +1,3 @@
-import type { BoardRepository } from '@/board/board.repo';
-import type { BoardMemberRepository } from '@/board-member/board-member.repo';
 import { withTransaction } from '@/db/transaction';
 import { UnauthorizedError } from '@/domain/auth/auth.errors';
 import { BoardNotFoundError } from '@/domain/board/board.errors';
@@ -9,7 +7,9 @@ import {
   InvalidReorderPayloadError,
   ListNotFoundError,
 } from '@/domain/board/list/list.errors';
-import type { ListRepository } from './list.repo';
+import type { BoardRepository } from '@/repositories/board.repo';
+import type { BoardMemberRepository } from '@/repositories/board-member.repo';
+import type { ListRepository } from '@/repositories/list.repo';
 
 const LIST_POSITION_GAP = 1000;
 

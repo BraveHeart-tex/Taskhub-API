@@ -3,7 +3,7 @@ import {
   BoardTitleAlreadyExistsError,
   InvalidBoardTitleError,
 } from '@/domain/board/board.errors';
-import type { DomainError } from '@/domain/shared/domain-error';
+import type { DomainError } from '@/domain/domain-error';
 
 export const boardErrorMap = new Map<
   new () => DomainError,

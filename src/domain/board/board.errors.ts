@@ -1,4 +1,4 @@
-import { DomainError } from '../shared/domain-error';
+import { DomainError } from '../domain-error';
 
 export class InvalidBoardTitleError extends DomainError {
   readonly code = 'INVALID_BOARD_TITLE';

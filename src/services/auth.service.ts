@@ -3,17 +3,17 @@ import {
   EmailAlreadyExistsError,
   InvalidCredentialsError,
 } from '../domain/auth/auth.errors';
-import type { SignUpInput } from '../routes/auth/schema';
-import { toAuthenticatedUser, toSessionContext } from './auth.mappers';
-import type { SessionValidationResult } from './auth.types';
-import { hashPassword, verifyPassword } from './password';
+import type { SessionValidationResult } from '../domain/auth/auth.types';
+import { toAuthenticatedUser, toSessionContext } from '../lib/auth';
+import { hashPassword, verifyPassword } from '../lib/password';
 import {
   generateSecureRandomString,
   getSessionExpiry,
   hashSessionSecret,
-} from './session';
-import type { SessionRepo } from './session.repo';
-import type { UserRepository } from './user.repo';
+} from '../lib/session';
+import type { SessionRepo } from '../repositories/session.repo';
+import type { UserRepository } from '../repositories/user.repo';
+import type { SignUpInput } from '../routes/auth/schema';
 
 export class AuthService {
   constructor(

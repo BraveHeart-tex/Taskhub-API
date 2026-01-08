@@ -1,5 +1,3 @@
-import type { UserRepository } from '../auth/user.repo';
-import type { BoardRepository } from '../board/board.repo';
 import { withTransaction } from '../db/transaction';
 import { UnauthorizedError } from '../domain/auth/auth.errors';
 import { BoardNotFoundError } from '../domain/board/board.errors';
@@ -8,8 +6,10 @@ import {
   BoardMemberNotFoundError,
 } from '../domain/board/board-member/board-member.errors';
 import { UserNotFoundError } from '../domain/user/user.errors';
+import type { BoardRepository } from '../repositories/board.repo';
+import type { BoardMemberRepository } from '../repositories/board-member.repo';
+import type { UserRepository } from '../repositories/user.repo';
 import type { BoardMemberListDTO } from '../routes/boards/:boardId/members/schema';
-import type { BoardMemberRepository } from './board-member.repo';
 
 export class BoardMemberService {
   constructor(

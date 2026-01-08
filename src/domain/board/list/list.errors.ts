@@ -1,4 +1,4 @@
-import { DomainError } from '@/domain/shared/domain-error';
+import { DomainError } from '@/domain/domain-error';
 
 export class ListNotFoundError extends DomainError {
   readonly code = 'LIST_NOT_FOUND';

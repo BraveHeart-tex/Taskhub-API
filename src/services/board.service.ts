@@ -1,15 +1,15 @@
-import type { BoardMemberRepository } from '../board-member/board-member.repo';
-import type { Board, BoardCreateInput } from '../db/schema';
-import { withTransaction } from '../db/transaction';
-import { UnauthorizedError } from '../domain/auth/auth.errors';
+import type { Board, BoardCreateInput } from '@/db/schema';
+import { withTransaction } from '@/db/transaction';
+import { UnauthorizedError } from '@/domain/auth/auth.errors';
 import {
   BoardNotFoundError,
   BoardTitleAlreadyExistsError,
   InvalidBoardTitleError,
-} from '../domain/board/board.errors';
-import { WorkspaceNotFoundError } from '../domain/workspace/workspace.errors';
-import type { WorkspaceRepository } from '../workspace/workspace.repo';
-import type { BoardRepository } from './board.repo';
+} from '@/domain/board/board.errors';
+import { WorkspaceNotFoundError } from '@/domain/workspace/workspace.errors';
+import type { BoardRepository } from '@/repositories/board.repo';
+import type { BoardMemberRepository } from '@/repositories/board-member.repo';
+import type { WorkspaceRepository } from '@/repositories/workspace.repo';
 
 export class BoardService {
   constructor(

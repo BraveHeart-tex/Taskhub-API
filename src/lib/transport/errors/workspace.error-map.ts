@@ -1,4 +1,4 @@
-import type { DomainError } from '@/domain/shared/domain-error';
+import type { DomainError } from '@/domain/domain-error';
 import {
   WorkspaceNameAlreadyExistsError,
   WorkspaceNotFoundError,

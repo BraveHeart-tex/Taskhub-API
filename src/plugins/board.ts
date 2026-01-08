@@ -1,8 +1,8 @@
 import fp from 'fastify-plugin';
-import { BoardRepository } from '../board/board.repo';
-import { BoardService } from '../board/board.service';
-import { BoardMemberRepository } from '../board-member/board-member.repo';
-import { WorkspaceRepository } from '../workspace/workspace.repo';
+import { BoardRepository } from '@/repositories/board.repo';
+import { BoardMemberRepository } from '@/repositories/board-member.repo';
+import { WorkspaceRepository } from '@/repositories/workspace.repo';
+import { BoardService } from '@/services/board.service';
 
 export default fp(async (app) => {
   const boardService = new BoardService(

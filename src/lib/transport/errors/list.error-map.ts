@@ -2,7 +2,7 @@ import {
   InvalidListTitleError,
   ListNotFoundError,
 } from '@/domain/board/list/list.errors';
-import type { DomainError } from '@/domain/shared/domain-error';
+import type { DomainError } from '@/domain/domain-error';
 
 export const listErrorMap = new Map<
   new () => DomainError,

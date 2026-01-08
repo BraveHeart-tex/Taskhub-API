@@ -1,4 +1,4 @@
-import type { DomainError } from '../../domain/shared/domain-error';
+import type { DomainError } from '@/domain/domain-error';
 import { authErrorMap } from './auth.error-map';
 import { boardErrorMap } from './board.error-map';
 import { boardMemberErrorMap } from './board-member.error-map';

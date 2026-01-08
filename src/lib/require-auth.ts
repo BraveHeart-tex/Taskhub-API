@@ -1,5 +1,5 @@
 import type { FastifyRequest } from 'fastify';
-import { UnauthenticatedError } from '../../domain/auth/auth.errors';
+import { UnauthenticatedError } from '../domain/auth/auth.errors';
 
 export function requireAuth(request: FastifyRequest) {
   if (!request.user || !request.session) {
