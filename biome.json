@@ -1,22 +1,24 @@
 {
   "$schema": "https://biomejs.dev/schemas/2.3.10/schema.json",
-  "vcs": { "enabled": true, "clientKind": "git", "useIgnoreFile": true },
+  "assist": {
+    "actions": {
+      "source": {
+        "organizeImports": "on"
+      }
+    },
+    "enabled": true
+  },
   "files": {
     "ignoreUnknown": true,
     "includes": ["**", "!!**/.next"]
   },
   "formatter": {
-    "enabled": true,
-    "formatWithErrors": false,
-    "indentStyle": "space",
-    "indentWidth": 2,
-    "lineEnding": "lf",
-    "lineWidth": 80,
     "attributePosition": "auto",
     "bracketSameLine": false,
     "bracketSpacing": true,
+    "enabled": true,
     "expand": "auto",
-    "useEditorconfig": true,
+    "formatWithErrors": false,
     "includes": [
       "**",
       "!**/.DS_Store",
@@ -31,41 +33,51 @@
       "!**/pnpm-workspace.yaml",
       "!**/package-lock.json",
       "!**/yarn.lock"
-    ]
+    ],
+    "indentStyle": "space",
+    "indentWidth": 2,
+    "lineEnding": "lf",
+    "lineWidth": 80,
+    "useEditorconfig": true
+  },
+  "javascript": {
+    "formatter": {
+      "arrowParentheses": "always",
+      "attributePosition": "auto",
+      "bracketSameLine": false,
+      "bracketSpacing": true,
+      "quoteProperties": "asNeeded",
+      "quoteStyle": "single",
+      "semicolons": "always",
+      "trailingCommas": "es5"
+    }
   },
   "linter": {
     "enabled": true,
     "rules": {
-      "recommended": true,
-      "style": {
-        "useImportType": {
-          "level":"on"
-        }
-      },
       "correctness": {
         "noUnusedImports": {
+          "fix": "safe",
           "level": "error"
         },
         "noUnusedVariables": {
           "level": "error"
         }
+      },
+      "recommended": true,
+      "style": {
+        "useImportType": {
+          "level": "on"
+        }
+      },
+      "suspicious": {
+        "noConsole": "error"
       }
     }
   },
-  "javascript": {
-    "formatter": {
-      "quoteProperties": "asNeeded",
-      "trailingCommas": "es5",
-      "semicolons": "always",
-      "arrowParentheses": "always",
-      "bracketSameLine": false,
-      "quoteStyle": "single",
-      "attributePosition": "auto",
-      "bracketSpacing": true
-    }
-  },
-  "assist": {
+  "vcs": {
+    "clientKind": "git",
     "enabled": true,
-    "actions": { "source": { "organizeImports": "on" } }
+    "useIgnoreFile": true
   }
 }
