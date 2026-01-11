@@ -8,12 +8,12 @@ import {
   serializerCompiler,
   validatorCompiler,
 } from 'fastify-type-provider-zod';
-import { logger } from './logger';
-import dbPlugin from './plugins/db';
-import dbTransactionPlugin from './plugins/db-context';
-import envPlugin from './plugins/env';
-import errorHandlerPlugin from './plugins/error-handler';
-import swaggerPlugin from './plugins/swagger';
+import { logger } from '@/logger';
+import dbPlugin from '@/plugins/db';
+import dbTransactionPlugin from '@/plugins/db-context';
+import envPlugin from '@/plugins/env';
+import errorHandlerPlugin from '@/plugins/error-handler';
+import swaggerPlugin from '@/plugins/swagger';
 
 export function buildApp() {
   const app = Fastify({
