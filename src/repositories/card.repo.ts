@@ -36,7 +36,7 @@ export class CardRepository {
         (row, index) =>
           sql`WHEN ${cards.id} = ${row.id} THEN ${
             (index + 1) * CARD_POSITION_GAP
-          }`
+          }::double precision`
       ),
       sql.raw(' ')
     );
