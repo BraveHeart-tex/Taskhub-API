@@ -9,6 +9,11 @@ export class CardRepository {
     const [card] = await db.insert(cards).values(input).returning();
     return card;
   }
+  async findById(cardId: string) {
+    const db = useDb();
+    const [card] = await db.select().from(cards).where(eq(cards.id, cardId));
+    return card;
+  }
   async getMinPositionInList(listId: string): Promise<string | null> {
     const db = useDb();
 
@@ -46,5 +51,9 @@ export class CardRepository {
       SET position = CASE ${caseSql} END
       WHERE ${cards.listId} = ${listId}
     `);
+  }
+  async delete(cardId: string) {
+    const db = useDb();
+    await db.delete(cards).where(eq(cards.id, cardId));
   }
 }

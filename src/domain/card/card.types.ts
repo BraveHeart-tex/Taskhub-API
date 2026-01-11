@@ -5,3 +5,10 @@ export interface CreateCardParams {
   listId: string;
   boardId: string;
 }
+
+export interface DeleteCardParams {
+  currentUserId: string;
+  cardId: string;
+  listId: string;
+  boardId: string;
+}

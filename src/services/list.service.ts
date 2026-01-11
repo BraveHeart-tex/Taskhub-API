@@ -13,6 +13,7 @@ import type { ListRepository } from '@/repositories/list.repo';
 
 const LIST_POSITION_GAP = 1000;
 
+// TODO: Handle position calculation for lists properly like in cards
 export class ListService {
   constructor(
     private readonly listRepository: ListRepository,
