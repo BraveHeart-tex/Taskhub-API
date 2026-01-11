@@ -2,6 +2,7 @@ import { sql } from 'drizzle-orm';
 import {
   doublePrecision,
   index,
+  numeric,
   pgEnum,
   pgTable,
   text,
@@ -149,7 +150,11 @@ export const cards = pgTable(
       .references(() => lists.id, { onDelete: 'cascade' }),
     title: text('title').notNull(),
     description: text('description'),
-    position: doublePrecision('position').notNull(),
+    position: numeric('position', {
+      precision: 20,
+      scale: 10,
+      mode: 'string',
+    }).notNull(),
     createdBy: uuid('created_by')
       .notNull()
       .references(() => users.id, { onDelete: 'cascade' }),

@@ -9,7 +9,7 @@ export class CardRepository {
     const [card] = await db.insert(cards).values(input).returning();
     return card;
   }
-  async getMinPositionInList(listId: string): Promise<number | null> {
+  async getMinPositionInList(listId: string): Promise<string | null> {
     const db = useDb();
 
     const [row] = await db
@@ -34,9 +34,9 @@ export class CardRepository {
     const caseSql = sql.join(
       rows.map(
         (row, index) =>
-          sql`WHEN ${cards.id} = ${row.id} THEN ${
-            (index + 1) * CARD_POSITION_GAP
-          }::double precision`
+          sql`WHEN ${cards.id} = ${row.id} THEN ${sql.raw(
+            `${index + 1} * ${CARD_POSITION_GAP}`
+          )}::numeric`
       ),
       sql.raw(' ')
     );
