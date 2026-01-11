@@ -92,4 +92,5 @@ export class CardService {
       await this.cardRepository.delete(cardId);
     });
   }
+  async updateCard() {}
 }
