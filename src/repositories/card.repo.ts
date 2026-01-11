@@ -27,7 +27,7 @@ export class CardRepository {
       .select({ id: cards.id })
       .from(cards)
       .where(eq(cards.listId, listId))
-      .orderBy(asc(cards.position));
+      .orderBy(asc(cards.position), asc(cards.id));
 
     if (rows.length === 0) return;
 
