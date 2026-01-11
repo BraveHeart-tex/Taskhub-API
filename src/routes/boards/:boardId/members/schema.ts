@@ -1,11 +1,15 @@
 import { z } from 'zod';
+import {
+  MAX_FULL_NAME_LENGTH,
+  MIN_FULL_NAME_LENGTH,
+} from '@/domain/auth/auth.constants';
 
 export const boardMemberDtoSchema = z.object({
   boardId: z.uuid(),
   user: z.object({
     id: z.uuid(),
     email: z.email(),
-    fullName: z.string().min(2).max(100),
+    fullName: z.string().min(MIN_FULL_NAME_LENGTH).max(MAX_FULL_NAME_LENGTH),
   }),
   role: z.literal('owner').or(z.literal('member')),
   joinedAt: z.iso.datetime(),
