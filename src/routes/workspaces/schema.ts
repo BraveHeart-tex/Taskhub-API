@@ -1,9 +1,5 @@
 import { z } from 'zod';
 
-export const createWorkspaceSchema = z.object({
-  name: z.string().min(2).max(100),
-});
-
 export const workspaceSchema = z.object({
   id: z.uuid(),
   name: z.string().min(2).max(100),
@@ -12,14 +8,14 @@ export const workspaceSchema = z.object({
   updatedAt: z.iso.datetime(),
 });
 
-export const deleteWorkspaceParamsSchema = z.object({
-  id: z.uuid(),
-});
-
-export const updateWorkspaceParamsSchema = z.object({
-  id: z.uuid(),
+export const createWorkspaceSchema = z.object({
+  name: z.string().min(2).max(100),
 });
 
 export const updateWorkspaceSchema = z.object({
   name: z.string().min(2).max(100),
+});
+
+export const workspaceRouteParamsSchema = z.object({
+  id: z.uuid(),
 });

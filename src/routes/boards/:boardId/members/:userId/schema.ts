@@ -1,6 +1,6 @@
 import { z } from 'zod';
-import { boardIdPathParamsSchema } from '../../schema';
+import { boardRouteParamsSchema } from '../../schema';
 
-export const deleteBoardMemberParamsSchema = boardIdPathParamsSchema.extend({
+export const deleteBoardMemberParamsSchema = boardRouteParamsSchema.extend({
   userId: z.uuid(),
 });

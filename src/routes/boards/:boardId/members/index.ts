@@ -1,6 +1,6 @@
 import type { FastifyPluginAsyncZod } from 'fastify-type-provider-zod';
 import { requireAuth } from '@/lib/require-auth';
-import { boardIdPathParamsSchema } from '../schema';
+import { boardRouteParamsSchema } from '../schema';
 import { boardMemberCreateDtoSchema, boardMemberListDtoSchema } from './schema';
 
 const route: FastifyPluginAsyncZod = async (app) => {
@@ -8,7 +8,7 @@ const route: FastifyPluginAsyncZod = async (app) => {
     '/',
     {
       schema: {
-        params: boardIdPathParamsSchema,
+        params: boardRouteParamsSchema,
         response: {
           200: boardMemberListDtoSchema,
         },
@@ -30,7 +30,7 @@ const route: FastifyPluginAsyncZod = async (app) => {
     '/',
     {
       schema: {
-        params: boardIdPathParamsSchema,
+        params: boardRouteParamsSchema,
         body: boardMemberCreateDtoSchema,
       },
     },

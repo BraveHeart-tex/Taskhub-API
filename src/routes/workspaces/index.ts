@@ -2,9 +2,8 @@ import type { FastifyPluginAsyncZod } from 'fastify-type-provider-zod';
 import { requireAuth } from '@/lib/require-auth';
 import {
   createWorkspaceSchema,
-  deleteWorkspaceParamsSchema,
-  updateWorkspaceParamsSchema,
   updateWorkspaceSchema,
+  workspaceRouteParamsSchema,
   workspaceSchema,
 } from './schema';
 
@@ -37,7 +36,7 @@ const route: FastifyPluginAsyncZod = async (app) => {
     '/:id',
     {
       schema: {
-        params: updateWorkspaceParamsSchema,
+        params: workspaceRouteParamsSchema,
         body: updateWorkspaceSchema,
         response: {
           200: workspaceSchema,
@@ -64,7 +63,7 @@ const route: FastifyPluginAsyncZod = async (app) => {
     '/:id',
     {
       schema: {
-        params: deleteWorkspaceParamsSchema,
+        params: workspaceRouteParamsSchema,
       },
     },
     async (request, reply) => {

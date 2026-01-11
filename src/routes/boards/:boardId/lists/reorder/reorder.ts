@@ -1,6 +1,6 @@
 import type { FastifyPluginAsyncZod } from 'fastify-type-provider-zod';
 import { requireAuth } from '@/lib/require-auth';
-import { boardIdPathParamsSchema } from '../../schema';
+import { boardRouteParamsSchema } from '../../schema';
 import { reOrderListsBodySchema } from './schema';
 
 const route: FastifyPluginAsyncZod = async (app) => {
@@ -8,7 +8,7 @@ const route: FastifyPluginAsyncZod = async (app) => {
     '/',
     {
       schema: {
-        params: boardIdPathParamsSchema,
+        params: boardRouteParamsSchema,
         body: reOrderListsBodySchema,
       },
     },

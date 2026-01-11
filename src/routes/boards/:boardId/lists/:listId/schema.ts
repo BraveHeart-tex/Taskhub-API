@@ -1,6 +1,6 @@
 import { z } from 'zod';
 
-export const boardListPathParamsSchema = z.object({
+export const listRouteParamsSchema = z.object({
   boardId: z.uuid(),
   listId: z.uuid(),
 });

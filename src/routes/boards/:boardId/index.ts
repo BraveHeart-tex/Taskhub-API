@@ -1,14 +1,14 @@
 import type { FastifyPluginAsyncZod } from 'fastify-type-provider-zod';
 import { requireAuth } from '@/lib/require-auth';
 import { boardSchema, updateBoardBodySchema } from '../schema';
-import { boardIdPathParamsSchema } from './schema';
+import { boardRouteParamsSchema } from './schema';
 
 const route: FastifyPluginAsyncZod = async (app) => {
   app.delete(
     '/',
     {
       schema: {
-        params: boardIdPathParamsSchema,
+        params: boardRouteParamsSchema,
       },
     },
     async (request, reply) => {
@@ -26,7 +26,7 @@ const route: FastifyPluginAsyncZod = async (app) => {
     '/',
     {
       schema: {
-        params: boardIdPathParamsSchema,
+        params: boardRouteParamsSchema,
         body: updateBoardBodySchema,
         response: {
           200: boardSchema,
