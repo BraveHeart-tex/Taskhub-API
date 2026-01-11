@@ -3,5 +3,5 @@ export const MIN_CARD_TITLE_LENGTH = 1;
 export const MAX_CARD_TITLE_LENGTH = 256;
 export const MAX_CARD_DESCRIPTION_LENGTH = 10_000;
 
-export const CARD_POSITION_GAP = 1024;
-export const MIN_POSITION_DELTA = 0.0001;
+export const CARD_POSITION_GAP = '1024';
+export const MIN_POSITION_DELTA = '0.0001';

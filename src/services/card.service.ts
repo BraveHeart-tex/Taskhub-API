@@ -2,11 +2,8 @@ import { withTransaction } from '@/db/transaction';
 import { BoardNotFoundError } from '@/domain/board/board.errors';
 import { BoardMemberNotFoundError } from '@/domain/board/board-member/board-member.errors';
 import { ListNotFoundError } from '@/domain/board/list/list.errors';
-import {
-  CARD_POSITION_GAP,
-  MIN_POSITION_DELTA,
-} from '@/domain/card/card.constants';
 import type { CreateCardParams } from '@/domain/card/card.types';
+import { computeInsertAtTopPosition } from '@/domain/card/positioning';
 import type { BoardRepository } from '@/repositories/board.repo';
 import type { BoardMemberRepository } from '@/repositories/board-member.repo';
 import type { CardRepository } from '@/repositories/card.repo';
@@ -38,6 +35,8 @@ export class CardService {
         throw new ListNotFoundError();
       }
 
+      await this.listRepository.lockById(listId);
+
       const isMember = await this.boardMemberRepository.isMember(
         board.id,
         currentUserId
@@ -49,31 +48,22 @@ export class CardService {
       const minPosition =
         await this.cardRepository.getMinPositionInList(listId);
 
-      let position: number;
+      let { position, needsRebalance } =
+        computeInsertAtTopPosition(minPosition);
 
-      if (minPosition === null) {
-        position = CARD_POSITION_GAP;
-      } else {
-        position = minPosition / 2;
+      if (needsRebalance) {
+        await this.cardRepository.rebalancePositions(listId);
 
-        if (minPosition - position < MIN_POSITION_DELTA) {
-          await this.cardRepository.rebalancePositions(listId);
+        const newMin = await this.cardRepository.getMinPositionInList(listId);
 
-          const newMin = await this.cardRepository.getMinPositionInList(listId);
-
-          if (newMin === null) {
-            position = CARD_POSITION_GAP;
-          } else {
-            position = newMin / 2;
-          }
-        }
+        ({ position } = computeInsertAtTopPosition(newMin));
       }
 
       return this.cardRepository.create({
         listId,
         title,
         description,
-        position,
+        position: position.toString(),
         createdBy: currentUserId,
       });
     });

@@ -17,5 +17,5 @@ export const cardDtoSchema = z.object({
   listId: z.uuid(),
   createdAt: z.iso.datetime(),
   updatedAt: z.iso.datetime(),
-  position: z.number().min(0),
+  position: z.string(),
 });

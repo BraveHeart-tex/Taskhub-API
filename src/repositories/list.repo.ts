@@ -9,6 +9,16 @@ export class ListRepository {
     const [result] = await db.insert(lists).values(values).returning();
     return result;
   }
+  async lockById(listId: string): Promise<void> {
+    const db = useDb();
+
+    await db.execute(sql`
+      SELECT 1
+      FROM ${lists}
+      WHERE ${lists.id} = ${listId}
+      FOR UPDATE
+    `);
+  }
   async getMaxPosition(boardId: string) {
     const db = useDb();
     const [row] = await db
