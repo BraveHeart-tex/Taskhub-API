@@ -56,15 +56,12 @@ export class AuthService {
     const user = await this.userRepo.findById(session.userId);
     if (!user) return null;
 
-    const newExpiresAt = getSessionExpiry(30);
-    await this.sessionRepo.updateExpiresAt(
-      session.id,
-      newExpiresAt.toISOString()
-    );
+    const newExpiresAt = getSessionExpiry(30).toISOString();
+    await this.sessionRepo.updateExpiresAt(session.id, newExpiresAt);
 
     const updatedSession = {
       ...session,
-      expiresAt: newExpiresAt.toISOString(),
+      expiresAt: newExpiresAt,
     };
 
     return {
