@@ -1,3 +1,13 @@
+export interface CardDto {
+  id: string;
+  title: string;
+  description: string | null;
+  position: string;
+  createdBy: string;
+  createdAt: string;
+  updatedAt: string;
+}
+
 export interface CreateCardParams {
   currentUserId: string;
   title: string;

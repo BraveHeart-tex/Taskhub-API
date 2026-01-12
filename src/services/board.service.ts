@@ -6,18 +6,21 @@ import {
   BoardTitleAlreadyExistsError,
   InvalidBoardTitleError,
 } from '@/domain/board/board.errors';
+import type { GetBoardResponse } from '@/domain/board/board.types';
 import { WorkspaceNotFoundError } from '@/domain/workspace/workspace.errors';
 import type { BoardRepository } from '@/repositories/board.repo';
 import type { BoardMemberRepository } from '@/repositories/board-member.repo';
+import type { BoardReadRepository } from '@/repositories/board-read.repo';
 import type { WorkspaceRepository } from '@/repositories/workspace.repo';
 
 export class BoardService {
   constructor(
     private readonly boardRepo: BoardRepository,
     private readonly boardMemberRepo: BoardMemberRepository,
-    private readonly workspaceRepo: WorkspaceRepository
+    private readonly workspaceRepo: WorkspaceRepository,
+    private readonly boardReadRepo: BoardReadRepository
   ) {}
-  async create(values: BoardInsert): Promise<BoardRow> {
+  async createBoard(values: BoardInsert): Promise<BoardRow> {
     return withTransaction(async () => {
       const workspace = await this.workspaceRepo.findById(values.workspaceId);
       if (!workspace) {
@@ -51,7 +54,7 @@ export class BoardService {
       return board;
     });
   }
-  async delete(boardId: string, currentUserId: string): Promise<void> {
+  async deleteBoard(boardId: string, currentUserId: string): Promise<void> {
     const board = await this.boardRepo.findById(boardId);
     if (!board) {
       throw new BoardNotFoundError();
@@ -63,7 +66,7 @@ export class BoardService {
 
     await this.boardRepo.delete(boardId);
   }
-  async update(
+  async updateBoard(
     currentUserId: string,
     boardId: string,
     changes: { title: string }
@@ -94,5 +97,11 @@ export class BoardService {
   async getUserBoards(userId: string): Promise<BoardRow[]> {
     const boards = await this.boardRepo.findByUserId(userId);
     return boards;
+  }
+  async getBoardDetails(
+    boardId: string,
+    userId: string
+  ): Promise<GetBoardResponse> {
+    return this.boardReadRepo.getBoard(boardId, userId);
   }
 }

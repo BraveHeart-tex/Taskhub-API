@@ -5,6 +5,24 @@ import { boardSchema, updateBoardBodySchema } from '../schema';
 import { boardRouteParamsSchema } from './schema';
 
 const route: FastifyPluginAsyncZod = async (app) => {
+  app.get(
+    '/',
+    {
+      schema: {
+        params: boardRouteParamsSchema,
+      },
+    },
+    async (request, reply) => {
+      const { user } = requireAuth(request);
+
+      const { boardId } = request.params;
+
+      const result = await app.boardService.getBoardDetails(boardId, user.id);
+
+      return reply.status(HttpStatus.OK).send(result);
+    }
+  );
+
   app.delete(
     '/',
     {
@@ -17,7 +35,7 @@ const route: FastifyPluginAsyncZod = async (app) => {
 
       const { boardId } = request.params;
 
-      await app.boardService.delete(boardId, user.id);
+      await app.boardService.deleteBoard(boardId, user.id);
 
       return reply.status(HttpStatus.NO_CONTENT).send();
     }
@@ -39,7 +57,7 @@ const route: FastifyPluginAsyncZod = async (app) => {
 
       const { boardId } = request.params;
 
-      const result = await app.boardService.update(
+      const result = await app.boardService.updateBoard(
         user.id,
         boardId,
         request.body

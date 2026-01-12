@@ -35,7 +35,7 @@ const route: FastifyPluginAsyncZod = async (app) => {
     async (request, reply) => {
       const { user } = requireAuth(request);
 
-      const result = await app.boardService.create({
+      const result = await app.boardService.createBoard({
         createdBy: user.id,
         workspaceId: request.body.workspaceId,
         title: request.body.title,
