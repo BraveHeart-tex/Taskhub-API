@@ -1,0 +1,1 @@
+ALTER TABLE "lists" ALTER COLUMN "position" SET DATA TYPE numeric(20, 10);

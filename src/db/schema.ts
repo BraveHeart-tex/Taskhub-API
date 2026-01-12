@@ -1,6 +1,5 @@
 import { sql } from 'drizzle-orm';
 import {
-  doublePrecision,
   index,
   numeric,
   pgEnum,
@@ -126,7 +125,11 @@ export const lists = pgTable(
       .notNull()
       .references(() => boards.id, { onDelete: 'cascade' }),
     title: text('title').notNull(),
-    position: doublePrecision('position').notNull(),
+    position: numeric('position', {
+      precision: 20,
+      scale: 10,
+      mode: 'string',
+    }).notNull(),
     createdAt: customTimestamp('created_at')
       .$defaultFn(() => sql`NOW()`)
       .notNull(),
