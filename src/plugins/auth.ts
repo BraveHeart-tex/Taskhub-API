@@ -1,11 +1,14 @@
 import fp from 'fastify-plugin';
 import { SESSION_COOKIE_NAME } from '@/domain/auth/auth.constants';
-import { SessionRepo } from '@/repositories/session.repo';
+import { SessionRepository } from '@/repositories/session.repo';
 import { UserRepository } from '@/repositories/user.repo';
 import { AuthService } from '@/services/auth.service';
 
 export default fp(async (app) => {
-  const authService = new AuthService(new UserRepository(), new SessionRepo());
+  const authService = new AuthService(
+    new UserRepository(),
+    new SessionRepository()
+  );
 
   app.decorate('authService', authService);
 

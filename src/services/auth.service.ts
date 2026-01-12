@@ -1,5 +1,9 @@
 import { timingSafeEqual } from 'node:crypto';
 import {
+  SESSION_REFRESH_THRESHOLD_MS,
+  SESSION_TTL_MS,
+} from '@/domain/auth/auth.constants';
+import {
   EmailAlreadyExistsError,
   InvalidCredentialsError,
 } from '@/domain/auth/auth.errors';
@@ -14,13 +18,13 @@ import {
   getSessionExpiry,
   hashSessionSecret,
 } from '@/lib/session';
-import type { SessionRepo } from '@/repositories/session.repo';
+import type { SessionRepository } from '@/repositories/session.repo';
 import type { UserRepository } from '@/repositories/user.repo';
 
 export class AuthService {
   constructor(
     private readonly userRepo: UserRepository,
-    private readonly sessionRepo: SessionRepo
+    private readonly sessionRepo: SessionRepository
   ) {}
 
   async validateSession(
@@ -56,12 +60,11 @@ export class AuthService {
     const user = await this.userRepo.findById(session.userId);
     if (!user) return null;
 
-    const newExpiresAt = getSessionExpiry(30).toISOString();
-    await this.sessionRepo.updateExpiresAt(session.id, newExpiresAt);
+    const maybeNewExpiresAt = await this.maybeExtendSession(session);
 
     const updatedSession = {
       ...session,
-      expiresAt: newExpiresAt,
+      expiresAt: maybeNewExpiresAt ?? session.expiresAt,
     };
 
     return {
@@ -137,5 +140,19 @@ export class AuthService {
 
   async logout(sessionId: string, userId: string) {
     await this.sessionRepo.deleteByIdAndUserId(sessionId, userId);
+  }
+  private async maybeExtendSession(session: { id: string; expiresAt: string }) {
+    const now = Date.now();
+    const expiresAt = new Date(session.expiresAt).getTime();
+
+    if (expiresAt - now > SESSION_REFRESH_THRESHOLD_MS) {
+      return null;
+    }
+
+    const newExpiresAt = new Date(now + SESSION_TTL_MS).toISOString();
+
+    await this.sessionRepo.extendIfLater(session.id, newExpiresAt);
+
+    return newExpiresAt;
   }
 }

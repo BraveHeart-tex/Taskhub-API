@@ -2,7 +2,7 @@ import { and, eq } from 'drizzle-orm';
 import { useDb } from '@/db/context';
 import { type SessionInsert, sessions } from '@/db/schema';
 
-export class SessionRepo {
+export class SessionRepository {
   async create(values: SessionInsert) {
     const db = useDb();
     await db.insert(sessions).values(values);
@@ -36,5 +36,14 @@ export class SessionRepo {
     await db
       .delete(sessions)
       .where(and(eq(sessions.id, sessionId), eq(sessions.userId, userId)));
+  }
+  async extendIfLater(sessionId: string, newExpiresAt: string) {
+    const db = useDb();
+    await db
+      .update(sessions)
+      .set({ expiresAt: newExpiresAt })
+      .where(
+        and(eq(sessions.id, sessionId), lt(sessions.expiresAt, newExpiresAt))
+      );
   }
 }
