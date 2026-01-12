@@ -1,6 +1,7 @@
 import type { FastifyPluginAsyncZod } from 'fastify-type-provider-zod';
 import { SESSION_COOKIE_NAME } from '@/domain/auth/auth.constants';
 import { AlreadyLoggedInError } from '@/domain/auth/auth.errors';
+import { COMMON_COOKIE_SETTINGS } from '@/http/cookies';
 import { HttpStatus } from '@/http/http-status';
 import { apiErrorSchema } from '@/lib/shared/schemas/error';
 import { authenticatedUserSchema, loginBodySchema } from './schema';
@@ -32,10 +33,7 @@ const loginRoute: FastifyPluginAsyncZod = async (app) => {
         SESSION_COOKIE_NAME,
         `${result.sessionId}.${result.sessionSecret}`,
         {
-          httpOnly: true,
-          secure: app.config.NODE_ENV === 'production',
-          path: '/',
-          sameSite: 'strict',
+          ...COMMON_COOKIE_SETTINGS,
         }
       );
 
