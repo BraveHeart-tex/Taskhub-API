@@ -49,6 +49,7 @@ export class AuthService {
     }
 
     if (!timingSafeEqual(storedHash, computedHash)) {
+      await this.sessionRepo.delete(session.id);
       return null;
     }
 
