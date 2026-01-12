@@ -71,6 +71,13 @@
       "when": 1768126570950,
       "tag": "0009_lean_mentor",
       "breakpoints": true
+    },
+    {
+      "idx": 10,
+      "version": "7",
+      "when": 1768215329120,
+      "tag": "0010_glamorous_lord_hawal",
+      "breakpoints": true
     }
   ]
 }

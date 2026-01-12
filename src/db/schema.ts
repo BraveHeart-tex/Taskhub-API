@@ -39,7 +39,10 @@ export const sessions = pgTable(
     secretHash: text('secret_hash').notNull(),
     expiresAt: customTimestamp('expires_at').notNull(),
   },
-  (table) => [index('sessions_user_id_idx').on(table.userId)]
+  (table) => [
+    index('sessions_user_id_idx').on(table.userId),
+    index('sessions_expires_at_idx').on(table.expiresAt),
+  ]
 );
 
 export const workspaces = pgTable(
