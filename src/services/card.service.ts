@@ -208,12 +208,12 @@ export class CardService {
           before: refreshedBefore,
           after: refreshedAfter,
         }));
-
-        return this.cardRepository.move(cardId, {
-          listId: targetListId,
-          position: position.toString(),
-        });
       }
+
+      return this.cardRepository.move(cardId, {
+        listId: targetListId,
+        position: position.toString(),
+      });
     });
   }
 }
