@@ -18,7 +18,7 @@ const loginRoute: FastifyPluginAsyncZod = async (app) => {
         },
       },
     },
-    async (request, response) => {
+    async (request, reply) => {
       if (request.user?.id || request.session?.id) {
         throw new AlreadyLoggedInError();
       }
@@ -28,7 +28,7 @@ const loginRoute: FastifyPluginAsyncZod = async (app) => {
         request.body.password
       );
 
-      response.setCookie(
+      reply.setCookie(
         SESSION_COOKIE_NAME,
         `${result.sessionId}.${result.sessionSecret}`,
         {
@@ -39,7 +39,7 @@ const loginRoute: FastifyPluginAsyncZod = async (app) => {
         }
       );
 
-      return response.status(HttpStatus.CREATED).send({
+      return reply.status(HttpStatus.CREATED).send({
         id: result.user.id,
         email: result.user.email,
         fullName: result.user.fullName,
