@@ -1,4 +1,4 @@
-import { and, eq } from 'drizzle-orm';
+import { and, eq, lt } from 'drizzle-orm';
 import { useDb } from '@/db/context';
 import { type SessionInsert, sessions } from '@/db/schema';
 

@@ -1,7 +1,8 @@
-import { sql } from 'drizzle-orm';
+import { asc, sql } from 'drizzle-orm';
 import { eq } from 'drizzle-orm/gel-core/expressions';
 import { useDb } from '@/db/context';
 import { type ListCreate, type ListUpdate, lists } from '@/db/schema';
+import { POSITION_GAP } from '@/domain/positioning/ordering';
 
 export class ListRepository {
   async create(values: ListCreate) {
@@ -80,5 +81,31 @@ export class ListRepository {
       .from(lists)
       .where(eq(lists.boardId, boardId));
     return rows;
+  }
+  async rebalancePositions(boardId: string) {
+    const db = useDb();
+    const rows = await db
+      .select({ id: lists.id })
+      .from(lists)
+      .where(eq(lists.boardId, boardId))
+      .orderBy(asc(lists.position), asc(lists.id));
+
+    if (rows.length === 0) return;
+
+    const caseSql = sql.join(
+      rows.map(
+        (row, index) =>
+          sql`WHEN ${lists.id} = ${row.id} THEN ${sql.raw(
+            `${index + 1} * ${POSITION_GAP}`
+          )}::numeric`
+      ),
+      sql.raw(' ')
+    );
+
+    await db.execute(sql`
+      UPDATE ${lists}
+      SET position = CASE ${caseSql} END
+      WHERE ${lists.boardId} = ${boardId}
+    `);
   }
 }

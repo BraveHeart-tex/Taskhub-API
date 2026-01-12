@@ -12,7 +12,7 @@ export const listSchema = z.object({
     .trim()
     .min(MIN_LIST_TITLE_LENGTH)
     .max(MAX_LIST_TITLE_LENGTH),
-  position: z.number().min(0),
+  position: z.string(),
   createdAt: z.iso.datetime(),
   updatedAt: z.iso.datetime(),
 });

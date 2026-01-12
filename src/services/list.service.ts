@@ -2,19 +2,18 @@ import { withTransaction } from '@/db/transaction';
 import { UnauthorizedError } from '@/domain/auth/auth.errors';
 import { BoardNotFoundError } from '@/domain/board/board.errors';
 import {
-  DuplicateListIdError,
   InvalidListTitleError,
-  InvalidReorderPayloadError,
   ListNotFoundError,
 } from '@/domain/board/list/list.errors';
-import { computeInsertAtBottomPosition } from '@/domain/positioning/ordering';
+import type { MoveListParams } from '@/domain/board/list/list.types';
+import {
+  computeInsertAtBottomPosition,
+  computeNewPosition,
+} from '@/domain/positioning/ordering';
 import type { BoardRepository } from '@/repositories/board.repo';
 import type { BoardMemberRepository } from '@/repositories/board-member.repo';
 import type { ListRepository } from '@/repositories/list.repo';
 
-const LIST_POSITION_GAP = 1000;
-
-// TODO: Handle position calculation for lists properly like in cards
 export class ListService {
   constructor(
     private readonly listRepository: ListRepository,
@@ -90,50 +89,67 @@ export class ListService {
       return this.listRepository.update(listId, { title: nextTitle });
     });
   }
-  async reorderLists({
+  async moveList({
     currentUserId,
     boardId,
-    items,
-  }: {
-    currentUserId: string;
-    boardId: string;
-    items: { listId: string }[];
-  }) {
+    listId,
+    beforeListId,
+    afterListId,
+  }: MoveListParams) {
     return withTransaction(async () => {
-      const board = await this.boardRepository.findById(boardId);
-      if (!board) throw new BoardNotFoundError();
-
       const isMember = await this.boardMemberRepository.isMember(
         boardId,
         currentUserId
       );
       if (!isMember) throw new UnauthorizedError();
 
-      const lists = await this.listRepository.findByBoardId(boardId);
-      const listIds = new Set(lists.map((l) => l.id));
-
-      if (items.length !== lists.length) {
-        throw new InvalidReorderPayloadError();
+      const list = await this.listRepository.findById(listId);
+      if (!list || list.boardId !== boardId) {
+        throw new ListNotFoundError();
       }
 
-      const seen = new Set<string>();
-      for (const item of items) {
-        if (seen.has(item.listId)) {
-          throw new DuplicateListIdError();
-        }
-        if (!listIds.has(item.listId)) {
-          throw new ListNotFoundError();
-        }
-        seen.add(item.listId);
+      await this.listRepository.lockById(listId);
+
+      const before = beforeListId
+        ? await this.listRepository.findById(beforeListId)
+        : null;
+
+      const after = afterListId
+        ? await this.listRepository.findById(afterListId)
+        : null;
+
+      if (
+        (before && before.boardId !== boardId) ||
+        (after && after.boardId !== boardId)
+      ) {
+        throw new ListNotFoundError();
       }
 
-      await this.listRepository.bulkUpdatePositions(
-        boardId,
-        items.map((item, index) => ({
-          listId: item.listId,
-          position: (index + 1) * LIST_POSITION_GAP,
-        }))
+      let { position, needsRebalance } = computeNewPosition(
+        before?.position,
+        after?.position
       );
+
+      if (needsRebalance) {
+        await this.listRepository.rebalancePositions(boardId);
+
+        const refreshedBefore = beforeListId
+          ? await this.listRepository.findById(beforeListId)
+          : null;
+
+        const refreshedAfter = afterListId
+          ? await this.listRepository.findById(afterListId)
+          : null;
+
+        ({ position } = computeNewPosition(
+          refreshedBefore?.position,
+          refreshedAfter?.position
+        ));
+      }
+
+      await this.listRepository.update(listId, {
+        position: position.toString(),
+      });
     });
   }
   async deleteList({

@@ -16,3 +16,8 @@ export const updateBoardListSchema = z.object({
     .min(MIN_BOARD_TITLE_LENGTH)
     .max(MAX_BOARD_TITLE_LENGTH),
 });
+
+export const moveListSchema = z.object({
+  afterListId: z.uuid().optional(),
+  beforeListId: z.uuid().optional(),
+});

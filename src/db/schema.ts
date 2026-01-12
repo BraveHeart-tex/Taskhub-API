@@ -200,7 +200,7 @@ export type BoardMemberInsert = typeof boardMembers.$inferInsert;
 export type BoardMemberUpdate = Pick<BoardMemberRow, 'role'>;
 
 export type ListCreate = typeof lists.$inferInsert;
-export type ListUpdate = Pick<ListRow, 'title'>;
+export type ListUpdate = Partial<Pick<ListRow, 'title' | 'position'>>;
 
 export type CardCreate = typeof cards.$inferInsert;
 export type CardUpdate = Pick<CardRow, 'title' | 'description'>;
