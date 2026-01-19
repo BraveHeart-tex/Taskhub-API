@@ -30,5 +30,5 @@ export const updateWorkspaceSchema = z.object({
 });
 
 export const workspaceRouteParamsSchema = z.object({
-  id: z.uuid(),
+  workspaceId: z.uuid(),
 });

@@ -6,6 +6,7 @@ import type { BoardService } from '@/services/board.service';
 import type { BoardMemberService } from '@/services/board-member.service';
 import type { ListService } from '@/services/list.service';
 import type { WorkspaceService } from '@/services/workspace.service';
+import type { WorkspaceMemberService } from '@/services/workspace-member.service';
 import 'fastify';
 import type { CardService } from '@/services/card.service';
 
@@ -17,6 +18,7 @@ declare module 'fastify' {
     boardMemberService: BoardMemberService;
     cardService: CardService;
     workspaceService: WorkspaceService;
+    workspaceMemberService: WorkspaceMemberService;
     listService: ListService;
     config: {
       NODE_ENV: string;

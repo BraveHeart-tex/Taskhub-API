@@ -66,6 +66,40 @@ export const workspaces = pgTable(
   ]
 );
 
+const workspaceMemberRoleEnum = pgEnum('workspace_member_role', [
+  'owner',
+  'admin',
+  'member',
+]);
+
+export const workspaceMembers = pgTable(
+  'workspace_members',
+  {
+    id: uuid('id').primaryKey().defaultRandom(),
+    workspaceId: uuid('workspace_id')
+      .notNull()
+      .references(() => workspaces.id, { onDelete: 'cascade' }),
+    userId: uuid('user_id')
+      .notNull()
+      .references(() => users.id, { onDelete: 'cascade' }),
+    role: workspaceMemberRoleEnum().notNull(),
+    createdAt: customTimestamp('created_at')
+      .$defaultFn(() => sql`NOW()`)
+      .notNull(),
+    updatedAt: customTimestamp('updated_at')
+      .$defaultFn(() => sql`NOW()`)
+      .notNull()
+      .$onUpdateFn(() => sql`NOW()`),
+  },
+  (table) => [
+    uniqueIndex('workspace_members_workspace_id_user_id_key').on(
+      table.workspaceId,
+      table.userId
+    ),
+    index('workspace_members_user_id_idx').on(table.userId),
+  ]
+);
+
 export const boards = pgTable(
   'boards',
   {
@@ -192,6 +226,10 @@ export type SessionInsert = typeof sessions.$inferInsert;
 
 export type WorkspaceInsert = typeof workspaces.$inferInsert;
 export type WorkspaceUpdate = Pick<WorkspaceRow, 'name'>;
+
+export type WorkspaceMemberRow = typeof workspaceMembers.$inferSelect;
+export type WorkspaceMemberInsert = typeof workspaceMembers.$inferInsert;
+export type WorkspaceMemberUpdate = Pick<WorkspaceMemberRow, 'role'>;
 
 export type BoardInsert = typeof boards.$inferInsert;
 export type BoardUpdate = Pick<BoardRow, 'title'>;

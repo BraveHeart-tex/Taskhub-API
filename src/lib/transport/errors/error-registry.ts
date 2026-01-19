@@ -5,6 +5,7 @@ import { boardMemberErrorMap } from './board-member.error-map';
 import { cardErrorMap } from './card.error-map';
 import { listErrorMap } from './list.error-map';
 import { workspaceErrorMap } from './workspace.error-map';
+import { workspaceMemberErrorMap } from './workspace-member.error-map';
 
 export const errorRegistry = new Map<
   new () => DomainError,
@@ -12,6 +13,7 @@ export const errorRegistry = new Map<
 >([
   ...authErrorMap,
   ...workspaceErrorMap,
+  ...workspaceMemberErrorMap,
   ...boardErrorMap,
   ...boardMemberErrorMap,
   ...listErrorMap,
