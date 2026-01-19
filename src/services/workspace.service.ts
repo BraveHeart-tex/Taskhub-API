@@ -3,27 +3,42 @@ import type {
   WorkspaceRow,
   WorkspaceUpdate,
 } from '@/db/schema';
+import { withTransaction } from '@/db/transaction';
 import { UnauthorizedError } from '@/domain/auth/auth.errors';
 import {
   WorkspaceNameAlreadyExistsError,
   WorkspaceNotFoundError,
 } from '@/domain/workspace/workspace.errors';
 import type { WorkspaceRepository } from '@/repositories/workspace.repo';
+import type { WorkspaceMemberRepository } from '@/repositories/workspace-member.repo';
 
 export class WorkspaceService {
-  constructor(private readonly workspaceRepo: WorkspaceRepository) {}
+  constructor(
+    private readonly workspaceRepo: WorkspaceRepository,
+    private readonly workspaceMemberRepo: WorkspaceMemberRepository
+  ) {}
 
   async createWorkspace(values: WorkspaceInsert) {
-    const existing = await this.workspaceRepo.findByOwnerAndName(
-      values.ownerId,
-      values.name
-    );
+    return withTransaction(async () => {
+      const existing = await this.workspaceRepo.findByOwnerAndName(
+        values.ownerId,
+        values.name
+      );
 
-    if (existing) {
-      throw new WorkspaceNameAlreadyExistsError();
-    }
+      if (existing) {
+        throw new WorkspaceNameAlreadyExistsError();
+      }
 
-    return await this.workspaceRepo.create(values);
+      const workspace = await this.workspaceRepo.create(values);
+
+      await this.workspaceMemberRepo.create({
+        workspaceId: workspace.id,
+        userId: values.ownerId,
+        role: 'owner',
+      });
+
+      return workspace;
+    });
   }
 
   async updateWorkspace({

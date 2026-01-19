@@ -29,3 +29,4 @@ const route: FastifyPluginAsyncZod = async (app) => {
 
 export default route;
 
+

@@ -14,3 +14,4 @@ export default fp(async (app) => {
   app.decorate('workspaceMemberService', workspaceMemberService);
 });
 
+

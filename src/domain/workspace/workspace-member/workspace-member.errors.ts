@@ -16,3 +16,4 @@ export class WorkspaceMemberAlreadyExistsError extends DomainError {
   }
 }
 
+
