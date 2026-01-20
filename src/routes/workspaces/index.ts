@@ -1,4 +1,5 @@
 import type { FastifyPluginAsyncZod } from 'fastify-type-provider-zod';
+import { z } from 'zod';
 import { HttpStatus } from '@/http/http-status';
 import { requireAuth } from '@/lib/require-auth';
 import { createWorkspaceSchema, workspaceSchema } from './schema';
@@ -9,7 +10,9 @@ const route: FastifyPluginAsyncZod = async (app) => {
     {
       schema: {
         response: {
-          [HttpStatus.OK]: workspaceSchema.array(),
+          [HttpStatus.OK]: workspaceSchema
+            .extend({ isCurrentUserOwner: z.boolean() })
+            .array(),
         },
       },
     },

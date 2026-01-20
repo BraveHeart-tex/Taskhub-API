@@ -92,6 +92,10 @@ export class WorkspaceService {
   }
 
   async getWorkspacesForUser(currentUserId: string) {
-    return await this.workspaceRepo.findByUserId(currentUserId);
+    const workspaces = await this.workspaceRepo.findByUserId(currentUserId);
+    return workspaces.map((workspace) => ({
+      ...workspace,
+      isCurrentUserOwner: workspace.ownerId === currentUserId,
+    }));
   }
 }
