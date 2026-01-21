@@ -6,7 +6,11 @@ import type {
 import { withTransaction } from '@/db/transaction';
 import { UnauthorizedError } from '@/domain/auth/auth.errors';
 import { WorkspaceNotFoundError } from '@/domain/workspace/workspace.errors';
-import type { WorkspacePreviewDto } from '@/domain/workspace/workspace.types';
+import type {
+  WorkspaceContextDto,
+  WorkspacePreviewDto,
+} from '@/domain/workspace/workspace.types';
+import { WorkspaceMemberNotFoundError } from '@/domain/workspace/workspace-member/workspace-member.errors';
 import type { WorkspaceRepository } from '@/repositories/workspace.repo';
 import type { WorkspaceMemberRepository } from '@/repositories/workspace-member.repo';
 
@@ -77,5 +81,33 @@ export class WorkspaceService {
       ...workspace,
       isCurrentUserOwner: workspace.ownerId === currentUserId,
     }));
+  }
+
+  async getWorkspaceForUser(
+    currentUserId: string,
+    workspaceId: string
+  ): Promise<WorkspaceContextDto> {
+    const workspace = await this.workspaceRepo.findById(workspaceId);
+
+    if (!workspace) {
+      throw new WorkspaceNotFoundError();
+    }
+
+    const isCurrentUserWorkspaceMember =
+      await this.workspaceMemberRepo.isMember(workspaceId, currentUserId);
+
+    if (!isCurrentUserWorkspaceMember) {
+      throw new WorkspaceMemberNotFoundError();
+    }
+
+    return {
+      id: workspace.id,
+      name: workspace.name,
+      ownerId: workspace.ownerId,
+      createdAt: workspace.createdAt,
+      updatedAt: workspace.updatedAt,
+      isCurrentUserOwner: workspace.ownerId === currentUserId,
+      role: workspace.ownerId === currentUserId ? 'owner' : 'member',
+    };
   }
 }

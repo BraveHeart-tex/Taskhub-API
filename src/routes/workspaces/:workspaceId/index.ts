@@ -3,11 +3,34 @@ import { HttpStatus } from '@/http/http-status';
 import { requireAuth } from '@/lib/require-auth';
 import {
   updateWorkspaceSchema,
+  workspaceContextResponseSchema,
   workspaceRouteParamsSchema,
   workspaceSchema,
 } from '../schema';
 
 const route: FastifyPluginAsyncZod = async (app) => {
+  app.get(
+    '/',
+    {
+      schema: {
+        params: workspaceRouteParamsSchema,
+        response: {
+          [HttpStatus.OK]: workspaceContextResponseSchema,
+        },
+      },
+    },
+    async (request, reply) => {
+      const { user } = requireAuth(request);
+
+      const workspaces = await app.workspaceService.getWorkspaceForUser(
+        user.id,
+        request.params.workspaceId
+      );
+
+      return reply.status(HttpStatus.OK).send(workspaces);
+    }
+  );
+
   app.patch(
     '/',
     {

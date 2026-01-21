@@ -1,4 +1,4 @@
-export type WorkspacePreviewDto = {
+export interface WorkspacePreviewDto {
   id: string;
   name: string;
   ownerId: string;
@@ -11,4 +11,14 @@ export type WorkspacePreviewDto = {
     name: string;
     avatarUrl: string | null;
   }[];
+}
+
+export type WorkspaceContextDto = {
+  id: string;
+  name: string;
+  ownerId: string;
+  createdAt: string;
+  updatedAt: string;
+  isCurrentUserOwner: boolean;
+  role: 'owner' | 'member';
 };

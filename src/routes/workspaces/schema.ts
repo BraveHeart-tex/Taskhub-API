@@ -45,3 +45,8 @@ export const workspacePreviewSchema = workspaceSchema.extend({
 });
 
 export const workspacePreviewResponseSchema = workspacePreviewSchema.array();
+
+export const workspaceContextResponseSchema = workspaceSchema.extend({
+  role: z.enum(['owner', 'member']),
+  isCurrentUserOwner: z.boolean(),
+});
