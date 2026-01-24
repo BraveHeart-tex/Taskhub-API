@@ -22,10 +22,6 @@ const route: FastifyPluginAsyncZod = async (app) => {
 
       const result = await app.workspaceService.getWorkspacesForUser(user.id);
 
-      app.log.info({
-        data: result,
-      });
-
       return reply.status(HttpStatus.OK).send(result);
     }
   );

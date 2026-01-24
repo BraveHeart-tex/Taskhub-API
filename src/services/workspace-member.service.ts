@@ -1,5 +1,5 @@
 import { withTransaction } from '@/db/transaction';
-import { UnauthorizedError } from '@/domain/auth/auth.errors';
+import { ForbiddenError, UnauthorizedError } from '@/domain/auth/auth.errors';
 import { UserNotFoundError } from '@/domain/user/user.errors';
 import { WorkspaceNotFoundError } from '@/domain/workspace/workspace.errors';
 import {
@@ -33,7 +33,7 @@ export class WorkspaceMemberService {
     );
     // Allow workspace owner to see members even if not explicitly added as member
     if (!isMember && workspace.ownerId !== currentUserId) {
-      throw new UnauthorizedError();
+      throw new ForbiddenError();
     }
 
     return this.workspaceMemberRepo.list(workspaceId);

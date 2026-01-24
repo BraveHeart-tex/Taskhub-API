@@ -44,3 +44,12 @@ export class UnauthorizedError extends DomainError {
     this.name = 'UnauthorizedError';
   }
 }
+
+export class ForbiddenError extends DomainError {
+  readonly code = 'FORBIDDEN';
+
+  constructor() {
+    super('You are not allowed to perform this action');
+    this.name = 'ForbiddenError';
+  }
+}

@@ -1,6 +1,7 @@
 import {
   AlreadyLoggedInError,
   EmailAlreadyExistsError,
+  ForbiddenError,
   InvalidCredentialsError,
   UnauthenticatedError,
   UnauthorizedError,
@@ -34,5 +35,12 @@ export const authErrorMap = new Map<
   [
     UnauthorizedError,
     { status: HttpStatus.FORBIDDEN, message: 'User is not authorized' },
+  ],
+  [
+    ForbiddenError,
+    {
+      status: HttpStatus.FORBIDDEN,
+      message: 'User is not allowed to perform this action',
+    },
   ],
 ]);
