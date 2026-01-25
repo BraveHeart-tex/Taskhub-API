@@ -9,7 +9,7 @@ import { UserNotFoundError } from '@/domain/user/user.errors';
 import type { BoardRepository } from '@/repositories/board.repo';
 import type { BoardMemberRepository } from '@/repositories/board-member.repo';
 import type { UserRepository } from '@/repositories/user.repo';
-import type { BoardMemberListDTO } from '@/routes/boards/:boardId/members/schema';
+import type { BoardMemberListDTO } from '@/routes/workspaces/:workspaceId/boards/:boardId/members/schema';
 
 export class BoardMemberService {
   constructor(
