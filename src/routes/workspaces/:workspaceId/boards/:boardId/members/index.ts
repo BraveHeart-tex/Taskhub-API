@@ -9,6 +9,11 @@ const route: FastifyPluginAsyncZod = async (app) => {
     '/',
     {
       schema: {
+        tags: ['Boards'],
+        summary: 'List board members',
+        description:
+          'Returns all members of a board the authenticated user has access to.\n\n' +
+          'Each member entry represents a user with access to the board.',
         params: boardRouteParamsSchema,
         response: {
           [HttpStatus.OK]: boardMemberListDtoSchema,
@@ -31,6 +36,11 @@ const route: FastifyPluginAsyncZod = async (app) => {
     '/',
     {
       schema: {
+        tags: ['Boards'],
+        summary: 'Add board member',
+        description:
+          'Grants a user access to a board.\n\n' +
+          'Only the board owner may add new members.',
         params: boardRouteParamsSchema,
         body: boardMemberCreateDtoSchema,
       },
