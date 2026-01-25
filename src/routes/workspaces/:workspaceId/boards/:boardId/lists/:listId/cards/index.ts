@@ -9,6 +9,11 @@ const route: FastifyPluginAsyncZod = async (app) => {
     '/',
     {
       schema: {
+        tags: ['Cards'],
+        summary: 'Create card',
+        description:
+          'Creates a new card within a list on a board the authenticated user has access to.\n\n' +
+          'The card is appended to the end of the list and returned with its initial position.',
         params: listRouteParamsSchema,
         body: createCardSchema,
         response: {
