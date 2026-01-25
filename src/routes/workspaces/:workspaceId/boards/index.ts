@@ -8,6 +8,11 @@ const route: FastifyPluginAsyncZod = async (app) => {
     '/',
     {
       schema: {
+        tags: ['Boards'],
+        summary: 'List boards',
+        description:
+          'Returns all boards the authenticated user has access to within the specified workspace.\n\n' +
+          'The response contains lightweight board data suitable for navigation and overview views.',
         response: {
           [HttpStatus.OK]: boardSchema.array(),
         },
@@ -26,6 +31,11 @@ const route: FastifyPluginAsyncZod = async (app) => {
     '/',
     {
       schema: {
+        tags: ['Boards'],
+        summary: 'Create board',
+        description:
+          'Creates a new board within the specified workspace.\n\n' +
+          'The authenticated user is assigned as the board owner.',
         body: createBoardBodySchema,
         response: {
           [HttpStatus.CREATED]: boardSchema,
