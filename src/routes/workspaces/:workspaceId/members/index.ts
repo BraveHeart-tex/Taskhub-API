@@ -14,6 +14,11 @@ const route: FastifyPluginAsyncZod = async (app) => {
     '/',
     {
       schema: {
+        tags: ['Workspaces'],
+        summary: 'List workspace members',
+        description:
+          'Returns all members of a workspace the authenticated user has access to.\n\n' +
+          'Each member entry includes the user and their assigned role within the workspace.',
         params: workspaceRouteParamsSchema,
         response: {
           [HttpStatus.OK]: workspaceMemberListDtoSchema,
@@ -36,6 +41,11 @@ const route: FastifyPluginAsyncZod = async (app) => {
     '/',
     {
       schema: {
+        tags: ['Workspaces'],
+        summary: 'Add workspace member',
+        description:
+          'Adds a user to a workspace with the specified role.\n\n' +
+          'Only users with sufficient permissions may add new members.',
         params: workspaceRouteParamsSchema,
         body: workspaceMemberCreateDtoSchema,
       },
@@ -57,6 +67,11 @@ const route: FastifyPluginAsyncZod = async (app) => {
     '/:userId',
     {
       schema: {
+        tags: ['Workspaces'],
+        summary: 'Update workspace member role',
+        description:
+          'Updates the role of an existing workspace member.\n\n' +
+          'Only users with sufficient permissions may modify member roles.',
         params: workspaceRouteParamsSchema.extend({
           userId: z.uuid(),
         }),
