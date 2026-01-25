@@ -9,6 +9,11 @@ const route: FastifyPluginAsyncZod = async (app) => {
     '/',
     {
       schema: {
+        tags: ['Boards'],
+        summary: 'Get board',
+        description:
+          'Returns detailed information for a single board the authenticated user has access to.\n\n' +
+          'The response contains board metadata required to render the board view.',
         params: boardRouteParamsSchema,
       },
     },
@@ -27,6 +32,11 @@ const route: FastifyPluginAsyncZod = async (app) => {
     '/',
     {
       schema: {
+        tags: ['Boards'],
+        summary: 'Delete board',
+        description:
+          'Permanently deletes a board the authenticated user owns.\n\n' +
+          'All associated data is removed as part of this operation and cannot be recovered.',
         params: boardRouteParamsSchema,
       },
     },
@@ -45,6 +55,11 @@ const route: FastifyPluginAsyncZod = async (app) => {
     '/',
     {
       schema: {
+        tags: ['Boards'],
+        summary: 'Update board',
+        description:
+          'Updates mutable fields of an existing board.\n\n' +
+          'Only users with sufficient permissions may perform this operation.',
         params: boardRouteParamsSchema,
         body: updateBoardBodySchema,
         response: {
