@@ -12,6 +12,11 @@ const route: FastifyPluginAsyncZod = async (app) => {
     '/',
     {
       schema: {
+        tags: ['Workspaces'],
+        summary: 'List workspaces',
+        description:
+          'Returns all workspaces the authenticated user is a member of.\n\n' +
+          'The response contains lightweight workspace previews suitable for list views and navigation.',
         response: {
           [HttpStatus.OK]: workspacePreviewResponseSchema,
         },
@@ -30,6 +35,11 @@ const route: FastifyPluginAsyncZod = async (app) => {
     '/',
     {
       schema: {
+        tags: ['Workspaces'],
+        summary: 'Create workspace',
+        description:
+          'Creates a new workspace and assigns the authenticated user as the owner.\n\n' +
+          'The newly created workspace is returned in full.',
         body: createWorkspaceSchema,
         response: {
           [HttpStatus.CREATED]: workspaceSchema,
