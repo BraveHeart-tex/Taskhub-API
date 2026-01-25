@@ -1,12 +1,12 @@
 import type { FastifyPluginAsyncZod } from 'fastify-type-provider-zod';
 import { HttpStatus } from '@/http/http-status';
 import { requireAuth } from '@/lib/require-auth';
-import { cardDtoSchema } from '../schema';
-import { moveCardBodySchema, moveCardParamsSchema } from './schema';
+import { cardDtoSchema } from '../../schema';
+import { moveCardBodySchema, moveCardParamsSchema } from '../schema';
 
 const route: FastifyPluginAsyncZod = async (app) => {
   app.post(
-    '/move',
+    '/',
     {
       schema: {
         tags: ['Cards'],
