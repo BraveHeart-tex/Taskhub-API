@@ -9,6 +9,11 @@ const route: FastifyPluginAsyncZod = async (app) => {
     '/',
     {
       schema: {
+        tags: ['Workspaces'],
+        summary: 'Remove workspace member',
+        description:
+          'Removes a user from a workspace.\n\n' +
+          'Only users with sufficient permissions may remove members from a workspace.',
         params: workspaceRouteParamsSchema.extend({
           userId: z.uuid(),
         }),
@@ -28,5 +33,3 @@ const route: FastifyPluginAsyncZod = async (app) => {
 };
 
 export default route;
-
-
