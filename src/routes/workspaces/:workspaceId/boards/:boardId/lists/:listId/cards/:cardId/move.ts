@@ -9,6 +9,11 @@ const route: FastifyPluginAsyncZod = async (app) => {
     '/move',
     {
       schema: {
+        tags: ['Cards'],
+        summary: 'Move card',
+        description:
+          'Moves a card to a new position within a board.\n\n' +
+          'The card may be repositioned within the same list or moved to a different list using relative positioning references.',
         params: moveCardParamsSchema,
         body: moveCardBodySchema,
         response: {
