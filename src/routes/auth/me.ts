@@ -8,6 +8,11 @@ const meRoute: FastifyPluginAsyncZod = async (app) => {
     '/me',
     {
       schema: {
+        tags: ['Auth'],
+        summary: 'Get current user',
+        description:
+          'Returns the currently authenticated user.\n\n' +
+          'This endpoint requires an active authenticated session and is commonly used to hydrate the client on initial load or page refresh.',
         response: {
           [HttpStatus.OK]: authenticatedUserSchema,
         },
