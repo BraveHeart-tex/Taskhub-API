@@ -11,13 +11,17 @@ import type {
   WorkspacePreviewDto,
 } from '@/domain/workspace/workspace.types';
 import { WorkspaceMemberNotFoundError } from '@/domain/workspace/workspace-member/workspace-member.errors';
+import type { BoardReadRepository } from '@/repositories/board-read.repo';
 import type { WorkspaceRepository } from '@/repositories/workspace.repo';
 import type { WorkspaceMemberRepository } from '@/repositories/workspace-member.repo';
+import type { WorkspaceMemberReadRepository } from '@/repositories/workspace-member-read.repo';
 
 export class WorkspaceService {
   constructor(
     private readonly workspaceRepo: WorkspaceRepository,
-    private readonly workspaceMemberRepo: WorkspaceMemberRepository
+    private readonly workspaceMemberRepo: WorkspaceMemberRepository,
+    private readonly workspaceMemberReadRepo: WorkspaceMemberReadRepository,
+    private readonly boardReadRepo: BoardReadRepository
   ) {}
 
   async createWorkspace(values: WorkspaceInsert) {
@@ -108,6 +112,40 @@ export class WorkspaceService {
       updatedAt: workspace.updatedAt,
       isCurrentUserOwner: workspace.ownerId === currentUserId,
       role: workspace.ownerId === currentUserId ? 'owner' : 'member',
+    };
+  }
+  async getWorkspaceSummary(currentUserId: string, workspaceId: string) {
+    const workspace = await this.workspaceRepo.findById(workspaceId);
+
+    if (!workspace) {
+      throw new WorkspaceNotFoundError();
+    }
+
+    const isMember = await this.workspaceMemberRepo.isMember(
+      workspaceId,
+      currentUserId
+    );
+
+    if (!isMember) {
+      throw new WorkspaceMemberNotFoundError();
+    }
+
+    const [memberCount, membersPreview, recentBoards] = await Promise.all([
+      this.workspaceMemberReadRepo.countMembers(workspaceId),
+      this.workspaceMemberReadRepo.getMembersPreview(workspaceId, 5),
+      this.boardReadRepo.getRecentBoardsForWorkspace(workspaceId, 6),
+    ]);
+
+    return {
+      id: workspace.id,
+      name: workspace.name,
+      ownerId: workspace.ownerId,
+      createdAt: workspace.createdAt,
+      updatedAt: workspace.updatedAt,
+      isCurrentUserOwner: workspace.ownerId === currentUserId,
+      memberCount,
+      membersPreview,
+      recentBoards,
     };
   }
 }

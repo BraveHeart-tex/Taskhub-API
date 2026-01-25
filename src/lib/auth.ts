@@ -9,6 +9,7 @@ export function toAuthenticatedUser(user: UserRow): AuthenticatedUser {
     email: user.email,
     createdAt: user.createdAt,
     updatedAt: user.updatedAt,
+    avatarUrl: user.avatarUrl,
   };
 }
 

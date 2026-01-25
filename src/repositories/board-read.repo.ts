@@ -1,4 +1,4 @@
-import { and, asc, eq, inArray } from 'drizzle-orm';
+import { and, asc, desc, eq, inArray } from 'drizzle-orm';
 import { useDb } from '@/db/context';
 import { boardMembers, boards, cards, lists, users } from '@/db/schema';
 import { BoardMemberNotFoundError } from '@/domain/board/board-member/board-member.errors';
@@ -118,5 +118,19 @@ export class BoardReadRepository {
           })) ?? [],
       })),
     };
+  }
+  async getRecentBoardsForWorkspace(workspaceId: string, limit: number) {
+    const db = useDb();
+
+    return await db
+      .select({
+        id: boards.id,
+        title: boards.title,
+        updatedAt: boards.updatedAt,
+      })
+      .from(boards)
+      .where(eq(boards.workspaceId, workspaceId))
+      .orderBy(desc(boards.updatedAt))
+      .limit(limit);
   }
 }
