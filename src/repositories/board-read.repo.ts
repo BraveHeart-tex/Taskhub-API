@@ -1,6 +1,6 @@
-import { and, desc, eq, sql } from 'drizzle-orm';
+import { and, asc, desc, eq, inArray, sql } from 'drizzle-orm';
 import { useDb } from '@/db/context';
-import { boardMembers, boards } from '@/db/schema';
+import { boardMembers, boards, cards, lists, users } from '@/db/schema';
 import { BoardMemberNotFoundError } from '@/domain/board/board-member/board-member.errors';
 
 export class BoardReadRepository {
@@ -80,5 +80,71 @@ export class BoardReadRepository {
       .groupBy(boards.id);
 
     return rows;
+  }
+  async getBoardContent(boardId: string, userId: string) {
+    const db = useDb();
+
+    const isMember = await db
+      .select()
+      .from(boardMembers)
+      .where(
+        and(eq(boardMembers.boardId, boardId), eq(boardMembers.userId, userId))
+      )
+      .limit(1);
+
+    if (isMember.length === 0) {
+      throw new BoardMemberNotFoundError();
+    }
+
+    const listsRows = await db
+      .select()
+      .from(lists)
+      .where(eq(lists.boardId, boardId))
+      .orderBy(asc(lists.position));
+
+    const cardRows = listsRows.length
+      ? await db
+          .select()
+          .from(cards)
+          .where(
+            inArray(
+              cards.listId,
+              listsRows.map((l) => l.id)
+            )
+          )
+          .orderBy(asc(cards.position))
+      : [];
+
+    const cardsByList = new Map<string, typeof cardRows>();
+
+    for (const card of cardRows) {
+      const arr = cardsByList.get(card.listId) ?? [];
+      arr.push(card);
+      cardsByList.set(card.listId, arr);
+    }
+
+    const userIds = new Set(cardRows.map((c) => c.createdBy));
+
+    const userRows = await db
+      .select({
+        id: users.id,
+        fullName: users.fullName,
+        avatarUrl: users.avatarUrl,
+      })
+      .from(users)
+      .where(inArray(users.id, [...userIds]));
+
+    const userMap = Object.fromEntries(userRows.map((u) => [u.id, u]));
+
+    return {
+      boardId,
+      lists: listsRows.map((l) => ({
+        id: l.id,
+        title: l.title,
+        position: l.position,
+        cards: cardsByList.get(l.id) ?? [],
+      })),
+      users: userMap,
+    };
   }
 }

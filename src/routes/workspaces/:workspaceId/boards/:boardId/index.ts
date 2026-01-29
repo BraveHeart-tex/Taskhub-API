@@ -28,6 +28,24 @@ const route: FastifyPluginAsyncZod = async (app) => {
     }
   );
 
+  app.get(
+    '/content',
+    {
+      schema: {
+        params: boardRouteParamsSchema,
+      },
+    },
+    async (request, reply) => {
+      const { user } = requireAuth(request);
+
+      const { boardId } = request.params;
+
+      const result = await app.boardService.getBoardContent(boardId, user.id);
+
+      return reply.status(HttpStatus.OK).send(result);
+    }
+  );
+
   app.delete(
     '/',
     {

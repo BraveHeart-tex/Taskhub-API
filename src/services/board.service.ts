@@ -7,6 +7,7 @@ import {
   InvalidBoardTitleError,
 } from '@/domain/board/board.errors';
 import type {
+  BoardContentDto,
   GetBoardContextResponse,
   WorkspaceBoardPreviewDto,
 } from '@/domain/board/board.types';
@@ -133,5 +134,11 @@ export class BoardService {
     userId: string
   ): Promise<GetBoardContextResponse> {
     return this.boardReadRepo.getBoardContext(boardId, userId);
+  }
+  async getBoardContent(
+    boardId: string,
+    userId: string
+  ): Promise<BoardContentDto> {
+    return this.boardReadRepo.getBoardContent(boardId, userId);
   }
 }
