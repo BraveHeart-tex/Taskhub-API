@@ -7,7 +7,7 @@ import {
   InvalidBoardTitleError,
 } from '@/domain/board/board.errors';
 import type {
-  GetBoardResponse,
+  GetBoardContextResponse,
   WorkspaceBoardPreviewDto,
 } from '@/domain/board/board.types';
 import { WorkspaceNotFoundError } from '@/domain/workspace/workspace.errors';
@@ -131,7 +131,7 @@ export class BoardService {
   async getBoardDetails(
     boardId: string,
     userId: string
-  ): Promise<GetBoardResponse> {
-    return this.boardReadRepo.getBoard(boardId, userId);
+  ): Promise<GetBoardContextResponse> {
+    return this.boardReadRepo.getBoardContext(boardId, userId);
   }
 }
