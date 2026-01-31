@@ -4,6 +4,7 @@ import {
   numeric,
   pgEnum,
   pgTable,
+  primaryKey,
   text,
   uniqueIndex,
   uuid,
@@ -211,6 +212,25 @@ export const cards = pgTable(
     index('cards_list_id').on(table.listId),
     uniqueIndex('cards_list_id_position_key').on(table.listId, table.position),
     index('cards_created_by').on(table.createdBy),
+  ]
+);
+
+export const boardFavorites = pgTable(
+  'board_favorites',
+  {
+    boardId: uuid()
+      .notNull()
+      .references(() => boards.id, { onDelete: 'cascade' }),
+    userId: uuid()
+      .notNull()
+      .references(() => users.id, { onDelete: 'cascade' }),
+    createdAt: customTimestamp('created_at')
+      .$defaultFn(() => sql`NOW()`)
+      .notNull(),
+  },
+  (table) => [
+    primaryKey({ columns: [table.boardId, table.userId] }),
+    index('board_favorites_user_id').on(table.userId),
   ]
 );
 
