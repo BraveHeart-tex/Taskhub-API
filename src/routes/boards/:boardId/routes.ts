@@ -22,7 +22,10 @@ const boardRoutes: FastifyPluginAsyncZod = async (app) => {
 
       const { boardId } = request.params;
 
-      return await app.boardService.getBoardDetails(boardId, user.id);
+      return await app.boardService.getBoardDetails({
+        boardId,
+        userId: user.id,
+      });
     }
   );
 
@@ -66,7 +69,10 @@ const boardRoutes: FastifyPluginAsyncZod = async (app) => {
 
       const { boardId } = request.params;
 
-      await app.boardService.deleteBoard(boardId, user.id);
+      await app.boardService.deleteBoard({
+        boardId,
+        userId: user.id,
+      });
 
       return reply.status(HttpStatus.NO_CONTENT).send();
     }
@@ -93,11 +99,11 @@ const boardRoutes: FastifyPluginAsyncZod = async (app) => {
 
       const { boardId } = request.params;
 
-      const result = await app.boardService.updateBoard(
-        user.id,
+      const result = await app.boardService.updateBoard({
+        userId: user.id,
         boardId,
-        request.body
-      );
+        changes: request.body,
+      });
 
       return reply.status(HttpStatus.OK).send(result);
     }

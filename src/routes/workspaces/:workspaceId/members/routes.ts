@@ -28,13 +28,13 @@ const route: FastifyPluginAsyncZod = async (app) => {
     async (request, reply) => {
       const { user } = requireAuth(request);
 
-      const result = await app.workspaceMemberService.getWorkspaceMembers(
-        request.params.workspaceId,
-        user.id,
-      );
+      const result = await app.workspaceMemberService.getWorkspaceMembers({
+        workspaceId: request.params.workspaceId,
+        userId: user.id,
+      });
 
       return reply.status(HttpStatus.OK).send(result);
-    },
+    }
   );
 
   app.post(
@@ -60,7 +60,7 @@ const route: FastifyPluginAsyncZod = async (app) => {
       });
 
       return reply.status(HttpStatus.NO_CONTENT).send();
-    },
+    }
   );
 
   app.patch(
@@ -88,7 +88,7 @@ const route: FastifyPluginAsyncZod = async (app) => {
       });
 
       return reply.status(HttpStatus.NO_CONTENT).send();
-    },
+    }
   );
 };
 

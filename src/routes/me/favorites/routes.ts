@@ -37,10 +37,10 @@ const route: FastifyPluginAsyncZod = async (app) => {
     async (request, reply) => {
       const { user } = requireAuth(request);
 
-      await app.boardFavoriteService.addFavorite(
-        user.id,
-        request.params.boardId
-      );
+      await app.boardFavoriteService.addFavorite({
+        userId: user.id,
+        boardId: request.params.boardId,
+      });
 
       return reply.status(HttpStatus.NO_CONTENT).send();
     }
@@ -60,10 +60,10 @@ const route: FastifyPluginAsyncZod = async (app) => {
     async (request, reply) => {
       const { user } = requireAuth(request);
 
-      await app.boardFavoriteService.removeFavorite(
-        user.id,
-        request.params.boardId
-      );
+      await app.boardFavoriteService.removeFavorite({
+        userId: user.id,
+        boardId: request.params.boardId,
+      });
 
       return reply.status(HttpStatus.NO_CONTENT).send();
     }

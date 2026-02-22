@@ -73,7 +73,7 @@ export class AuthService {
     };
   }
 
-  async login(email: string, password: string) {
+  async login({ email, password }: { email: string; password: string }) {
     const user = await this.userRepo.findByEmail(email);
     if (!user) {
       throw new InvalidCredentialsError();
@@ -138,7 +138,7 @@ export class AuthService {
     };
   }
 
-  async logout(sessionId: string, userId: string) {
+  async logout({ sessionId, userId }: { sessionId: string; userId: string }) {
     await this.sessionRepo.deleteByIdAndUserId({
       sessionId,
       userId,

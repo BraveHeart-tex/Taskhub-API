@@ -18,10 +18,10 @@ const route: FastifyPluginAsyncZod = async (app) => {
     async (request, reply) => {
       const { user } = requireAuth(request);
 
-      const result = await app.workspaceService.getWorkspaceSummary(
-        user.id,
-        request.params.workspaceId
-      );
+      const result = await app.workspaceService.getWorkspaceSummary({
+        userId: user.id,
+        workspaceId: request.params.workspaceId,
+      });
 
       return reply.send(result);
     }

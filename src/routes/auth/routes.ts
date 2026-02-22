@@ -37,10 +37,10 @@ const authRoutes: FastifyPluginAsyncZod = async (app) => {
         throw new AlreadyLoggedInError();
       }
 
-      const result = await app.authService.login(
-        request.body.email,
-        request.body.password
-      );
+      const result = await app.authService.login({
+        email: request.body.email,
+        password: request.body.password,
+      });
 
       reply.setCookie(
         SESSION_COOKIE_NAME,
@@ -111,7 +111,10 @@ const authRoutes: FastifyPluginAsyncZod = async (app) => {
     async (request, reply) => {
       const { user, session } = requireAuth(request);
 
-      await app.authService.logout(session.id, user.id);
+      await app.authService.logout({
+        sessionId: session.id,
+        userId: user.id,
+      });
 
       reply.clearCookie(SESSION_COOKIE_NAME);
 

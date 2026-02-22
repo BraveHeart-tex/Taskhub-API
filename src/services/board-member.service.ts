@@ -18,10 +18,13 @@ export class BoardMemberService {
     private readonly userRepo: UserRepository
   ) {}
 
-  async getBoardMembers(
-    boardId: string,
-    currentUserId: string
-  ): Promise<BoardMemberListDTO> {
+  async getBoardMembers({
+    boardId,
+    userId,
+  }: {
+    boardId: string;
+    userId: string;
+  }): Promise<BoardMemberListDTO> {
     const board = await this.boardRepo.findById(boardId);
     if (!board) {
       throw new BoardNotFoundError();
@@ -29,7 +32,7 @@ export class BoardMemberService {
 
     const isMember = await this.boardMemberRepo.isMember({
       boardId,
-      userId: currentUserId,
+      userId,
     });
     if (!isMember) {
       throw new UnauthorizedError();

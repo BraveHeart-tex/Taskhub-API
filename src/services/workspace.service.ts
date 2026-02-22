@@ -64,30 +64,31 @@ export class WorkspaceService {
     return await this.workspaceRepo.update(workspaceId, changes);
   }
 
-  async deleteWorkspace(
-    currentUserId: WorkspaceRow['ownerId'],
-    workspaceId: WorkspaceRow['id']
-  ) {
+  async deleteWorkspace({
+    userId,
+    workspaceId,
+  }: {
+    userId: string;
+    workspaceId: string;
+  }) {
     const workspace = await this.workspaceRepo.findById(workspaceId);
 
     if (!workspace) {
       throw new WorkspaceNotFoundError();
     }
 
-    if (workspace.ownerId !== currentUserId) {
+    if (workspace.ownerId !== userId) {
       throw new UnauthorizedError();
     }
 
     await this.workspaceRepo.delete(workspaceId);
   }
 
-  async getWorkspacesForUser(
-    currentUserId: string
-  ): Promise<WorkspacePreviewDto[]> {
-    const workspaces = await this.workspaceRepo.findByUserId(currentUserId);
+  async getWorkspacesForUser(userId: string): Promise<WorkspacePreviewDto[]> {
+    const workspaces = await this.workspaceRepo.findByUserId(userId);
     return workspaces.map((workspace) => ({
       ...workspace,
-      isCurrentUserOwner: workspace.ownerId === currentUserId,
+      isCurrentUserOwner: workspace.ownerId === userId,
     }));
   }
 
@@ -121,14 +122,20 @@ export class WorkspaceService {
       role: workspace.ownerId === currentUserId ? 'owner' : 'member',
     };
   }
-  async getWorkspaceSummary(currentUserId: string, workspaceId: string) {
+  async getWorkspaceSummary({
+    userId,
+    workspaceId,
+  }: {
+    userId: string;
+    workspaceId: string;
+  }) {
     const workspace = await this.workspaceRepo.findById(workspaceId);
 
     if (!workspace) {
       throw new WorkspaceNotFoundError();
     }
 
-    await this.assertMember(currentUserId, workspaceId);
+    await this.assertMember({ userId, workspaceId });
 
     const [memberCount, membersPreview, recentBoards] = await Promise.all([
       this.workspaceMemberReadRepo.countMembers(workspaceId),
@@ -142,7 +149,7 @@ export class WorkspaceService {
       ownerId: workspace.ownerId,
       createdAt: workspace.createdAt,
       updatedAt: workspace.updatedAt,
-      isCurrentUserOwner: workspace.ownerId === currentUserId,
+      isCurrentUserOwner: workspace.ownerId === userId,
       memberCount,
       membersPreview,
       recentBoards,
@@ -165,7 +172,13 @@ export class WorkspaceService {
 
     return workspace;
   }
-  async assertMember(userId: string, workspaceId: string): Promise<void> {
+  async assertMember({
+    userId,
+    workspaceId,
+  }: {
+    userId: string;
+    workspaceId: string;
+  }): Promise<void> {
     const workspace = await this.workspaceRepo.findById(workspaceId);
 
     if (!workspace) {

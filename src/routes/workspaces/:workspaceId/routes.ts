@@ -85,7 +85,10 @@ const workspaceRoutes: FastifyPluginAsyncZod = async (app) => {
 
       const workspaceId = request.params.workspaceId;
 
-      await app.workspaceService.deleteWorkspace(user.id, workspaceId);
+      await app.workspaceService.deleteWorkspace({
+        userId: user.id,
+        workspaceId,
+      });
 
       return reply.status(HttpStatus.NO_CONTENT).send();
     }

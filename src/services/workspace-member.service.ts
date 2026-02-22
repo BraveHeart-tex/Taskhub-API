@@ -18,10 +18,13 @@ export class WorkspaceMemberService {
     private readonly userRepo: UserRepository
   ) {}
 
-  async getWorkspaceMembers(
-    workspaceId: string,
-    currentUserId: string
-  ): Promise<WorkspaceMemberListDTO> {
+  async getWorkspaceMembers({
+    workspaceId,
+    userId,
+  }: {
+    workspaceId: string;
+    userId: string;
+  }): Promise<WorkspaceMemberListDTO> {
     const workspace = await this.workspaceRepo.findById(workspaceId);
     if (!workspace) {
       throw new WorkspaceNotFoundError();
@@ -29,11 +32,11 @@ export class WorkspaceMemberService {
 
     const isMember = await this.workspaceMemberRepo.isMember({
       workspaceId,
-      userId: currentUserId,
+      userId,
     });
 
     // Allow workspace owner to see members even if not explicitly added as member
-    if (!isMember && workspace.ownerId !== currentUserId) {
+    if (!isMember && workspace.ownerId !== userId) {
       throw new ForbiddenError();
     }
 

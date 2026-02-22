@@ -23,10 +23,10 @@ const route: FastifyPluginAsyncZod = async (app) => {
     async (request, reply) => {
       const { user } = requireAuth(request);
 
-      const result = await app.boardMemberService.getBoardMembers(
-        request.params.boardId,
-        user.id
-      );
+      const result = await app.boardMemberService.getBoardMembers({
+        boardId: request.params.boardId,
+        userId: user.id,
+      });
 
       return reply.status(HttpStatus.OK).send(result);
     }

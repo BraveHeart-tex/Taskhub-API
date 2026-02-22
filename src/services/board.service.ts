@@ -69,29 +69,39 @@ export class BoardService {
       return board;
     });
   }
-  async deleteBoard(boardId: string, currentUserId: string): Promise<void> {
+  async deleteBoard({
+    boardId,
+    userId,
+  }: {
+    boardId: string;
+    userId: string;
+  }): Promise<void> {
     const board = await this.boardRepo.findById(boardId);
     if (!board) {
       throw new BoardNotFoundError();
     }
 
-    if (board.createdBy !== currentUserId) {
+    if (board.createdBy !== userId) {
       throw new UnauthorizedError();
     }
 
     await this.boardRepo.delete(boardId);
   }
-  async updateBoard(
-    currentUserId: string,
-    boardId: string,
-    changes: { title: string }
-  ) {
+  async updateBoard({
+    userId,
+    boardId,
+    changes,
+  }: {
+    userId: string;
+    boardId: string;
+    changes: { title: string };
+  }) {
     const board = await this.boardRepo.findById(boardId);
     if (!board) {
       throw new BoardNotFoundError();
     }
 
-    if (board.createdBy !== currentUserId) {
+    if (board.createdBy !== userId) {
       throw new UnauthorizedError();
     }
 
@@ -109,10 +119,13 @@ export class BoardService {
 
     return this.boardRepo.update(boardId, { title });
   }
-  async listBoardsForWorkspace(
-    currentUserId: string,
-    workspaceId: string
-  ): Promise<WorkspaceBoardPreviewDto[]> {
+  async listBoardsForWorkspace({
+    userId,
+    workspaceId,
+  }: {
+    userId: string;
+    workspaceId: string;
+  }): Promise<WorkspaceBoardPreviewDto[]> {
     const workspace = await this.workspaceRepo.findById(workspaceId);
     if (!workspace) {
       throw new WorkspaceNotFoundError();
@@ -120,7 +133,7 @@ export class BoardService {
 
     const isMember = await this.workspaceMemberRepo.isMember({
       workspaceId,
-      userId: currentUserId,
+      userId,
     });
     if (!isMember) {
       throw new UnauthorizedError();
@@ -135,13 +148,16 @@ export class BoardService {
       createdAt: row.createdAt,
       updatedAt: row.updatedAt,
       memberCount: row.memberCount,
-      isCurrentUserOwner: row.ownerId === currentUserId,
+      isCurrentUserOwner: row.ownerId === userId,
     }));
   }
-  async getBoardDetails(
-    boardId: string,
-    userId: string
-  ): Promise<GetBoardContextResponse> {
+  async getBoardDetails({
+    boardId,
+    userId,
+  }: {
+    boardId: string;
+    userId: string;
+  }): Promise<GetBoardContextResponse> {
     return this.boardReadRepo.getBoardContext({ boardId, userId });
   }
   async getBoardContent(

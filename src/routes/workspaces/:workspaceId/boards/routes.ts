@@ -27,10 +27,10 @@ const workspaceBoardRoutes: FastifyPluginAsyncZod = async (app) => {
     async (request, reply) => {
       const { user } = requireAuth(request);
 
-      const result = await app.boardService.listBoardsForWorkspace(
-        user.id,
-        request.params.workspaceId
-      );
+      const result = await app.boardService.listBoardsForWorkspace({
+        userId: user.id,
+        workspaceId: request.params.workspaceId,
+      });
 
       return reply.status(HttpStatus.OK).send(result);
     }
