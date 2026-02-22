@@ -27,10 +27,11 @@ export class WorkspaceMemberService {
       throw new WorkspaceNotFoundError();
     }
 
-    const isMember = await this.workspaceMemberRepo.isMember(
+    const isMember = await this.workspaceMemberRepo.isMember({
       workspaceId,
-      currentUserId
-    );
+      userId: currentUserId,
+    });
+
     // Allow workspace owner to see members even if not explicitly added as member
     if (!isMember && workspace.ownerId !== currentUserId) {
       throw new ForbiddenError();
@@ -55,10 +56,10 @@ export class WorkspaceMemberService {
       }
 
       const currentUserMemberInfo =
-        await this.workspaceMemberRepo.findByIdAndUserId(
-          values.workspaceId,
-          currentUserId
-        );
+        await this.workspaceMemberRepo.findByIdAndUserId({
+          workspaceId: values.workspaceId,
+          userId: currentUserId,
+        });
 
       const isOwner = workspace.ownerId === currentUserId;
       const isAdmin =
@@ -70,10 +71,10 @@ export class WorkspaceMemberService {
       }
 
       const targetUserMemberInfo =
-        await this.workspaceMemberRepo.findByIdAndUserId(
-          values.workspaceId,
-          values.userId
-        );
+        await this.workspaceMemberRepo.findByIdAndUserId({
+          workspaceId: values.workspaceId,
+          userId: values.userId,
+        });
 
       if (targetUserMemberInfo) {
         throw new WorkspaceMemberAlreadyExistsError();
@@ -110,10 +111,10 @@ export class WorkspaceMemberService {
       }
 
       const targetUserMemberInfo =
-        await this.workspaceMemberRepo.findByIdAndUserId(
-          values.workspaceId,
-          values.userId
-        );
+        await this.workspaceMemberRepo.findByIdAndUserId({
+          workspaceId: values.workspaceId,
+          userId: values.userId,
+        });
 
       if (!targetUserMemberInfo) {
         throw new WorkspaceMemberNotFoundError();
@@ -140,10 +141,10 @@ export class WorkspaceMemberService {
       }
 
       const currentUserMemberInfo =
-        await this.workspaceMemberRepo.findByIdAndUserId(
-          values.workspaceId,
-          currentUserId
-        );
+        await this.workspaceMemberRepo.findByIdAndUserId({
+          workspaceId: values.workspaceId,
+          userId: currentUserId,
+        });
 
       const isOwner = workspace.ownerId === currentUserId;
       const isAdmin =
@@ -155,10 +156,10 @@ export class WorkspaceMemberService {
       }
 
       const targetUserMemberInfo =
-        await this.workspaceMemberRepo.findByIdAndUserId(
-          values.workspaceId,
-          values.userId
-        );
+        await this.workspaceMemberRepo.findByIdAndUserId({
+          workspaceId: values.workspaceId,
+          userId: values.userId,
+        });
 
       if (!targetUserMemberInfo) {
         throw new WorkspaceMemberNotFoundError();

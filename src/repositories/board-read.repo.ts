@@ -11,7 +11,13 @@ import {
 import { BoardMemberNotFoundError } from '@/domain/board/board-member/board-member.errors';
 
 export class BoardReadRepository {
-  async getBoardContext(boardId: string, currentUserId: string) {
+  async getBoardContext({
+    boardId,
+    userId,
+  }: {
+    boardId: string;
+    userId: string;
+  }) {
     const db = useDb();
 
     const rows = await db
@@ -29,14 +35,14 @@ export class BoardReadRepository {
         boardMembers,
         and(
           eq(boardMembers.boardId, boards.id),
-          eq(boardMembers.userId, currentUserId)
+          eq(boardMembers.userId, userId)
         )
       )
       .leftJoin(
         boardFavorites,
         and(
           eq(boardFavorites.boardId, boards.id),
-          eq(boardFavorites.userId, currentUserId)
+          eq(boardFavorites.userId, userId)
         )
       )
       .where(eq(boards.id, boardId))
@@ -99,7 +105,13 @@ export class BoardReadRepository {
 
     return rows;
   }
-  async getBoardContent(boardId: string, userId: string) {
+  async getBoardContent({
+    boardId,
+    userId,
+  }: {
+    boardId: string;
+    userId: string;
+  }) {
     const db = useDb();
 
     const isMember = await db

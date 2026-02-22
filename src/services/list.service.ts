@@ -37,7 +37,10 @@ export class ListService {
       }
 
       const isCurrentUserBoardMember =
-        await this.boardMemberRepository.isMember(boardId, currentUserId);
+        await this.boardMemberRepository.isMember({
+          boardId,
+          userId: currentUserId,
+        });
       if (!isCurrentUserBoardMember) {
         throw new UnauthorizedError();
       }
@@ -70,10 +73,10 @@ export class ListService {
         throw new BoardNotFoundError();
       }
 
-      const isMember = await this.boardMemberRepository.isMember(
+      const isMember = await this.boardMemberRepository.isMember({
         boardId,
-        currentUserId
-      );
+        userId: currentUserId,
+      });
       if (!isMember) {
         throw new UnauthorizedError();
       }
@@ -99,10 +102,10 @@ export class ListService {
     afterListId,
   }: MoveListParams) {
     return withTransaction(async () => {
-      const isMember = await this.boardMemberRepository.isMember(
+      const isMember = await this.boardMemberRepository.isMember({
         boardId,
-        currentUserId
-      );
+        userId: currentUserId,
+      });
       if (!isMember) throw new UnauthorizedError();
 
       const list = await this.listRepository.findById(listId);
@@ -170,7 +173,10 @@ export class ListService {
       }
 
       const isCurrentUserBoardMember =
-        await this.boardMemberRepository.isMember(boardId, currentUserId);
+        await this.boardMemberRepository.isMember({
+          boardId,
+          userId: currentUserId,
+        });
       if (!isCurrentUserBoardMember) {
         throw new UnauthorizedError();
       }

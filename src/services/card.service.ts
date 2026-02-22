@@ -39,10 +39,10 @@ export class CardService {
 
       await this.listRepository.lockById(listId);
 
-      const isMember = await this.boardMemberRepository.isMember(
+      const isMember = await this.boardMemberRepository.isMember({
         boardId,
-        currentUserId
-      );
+        userId: currentUserId,
+      });
       if (!isMember) {
         throw new BoardMemberNotFoundError();
       }
@@ -88,10 +88,10 @@ export class CardService {
         throw new ListNotFoundError();
       }
 
-      const isMember = await this.boardMemberRepository.isMember(
-        boardId,
-        currentUserId
-      );
+      const isMember = await this.boardMemberRepository.isMember({
+        boardId: boardId,
+        userId: currentUserId,
+      });
       if (!isMember) {
         throw new BoardMemberNotFoundError();
       }
@@ -118,10 +118,10 @@ export class CardService {
         throw new ListNotFoundError();
       }
 
-      const isMember = await this.boardMemberRepository.isMember(
+      const isMember = await this.boardMemberRepository.isMember({
         boardId,
-        currentUserId
-      );
+        userId: currentUserId,
+      });
       if (!isMember) {
         throw new BoardMemberNotFoundError();
       }
@@ -141,10 +141,10 @@ export class CardService {
     afterCardId,
   }: MoveCardInput) {
     return withTransaction(async () => {
-      const isMember = await this.boardMemberRepository.isMember(
+      const isMember = await this.boardMemberRepository.isMember({
         boardId,
-        currentUserId
-      );
+        userId: currentUserId,
+      });
       if (!isMember) {
         throw new BoardMemberNotFoundError();
       }
@@ -167,14 +167,17 @@ export class CardService {
       }
 
       const beforePosition = beforeCardId
-        ? await this.cardRepository.getPositionInList(
-            beforeCardId,
-            targetListId
-          )
+        ? await this.cardRepository.getPositionInList({
+            cardId: beforeCardId,
+            listId: targetListId,
+          })
         : null;
 
       const afterPosition = afterCardId
-        ? await this.cardRepository.getPositionInList(afterCardId, targetListId)
+        ? await this.cardRepository.getPositionInList({
+            cardId: afterCardId,
+            listId: targetListId,
+          })
         : null;
 
       if (beforeCardId && beforePosition === null) {
@@ -193,17 +196,17 @@ export class CardService {
         await this.cardRepository.rebalancePositions(targetListId);
 
         const refreshedBefore = beforeCardId
-          ? await this.cardRepository.getPositionInList(
-              beforeCardId,
-              targetListId
-            )
+          ? await this.cardRepository.getPositionInList({
+              cardId: beforeCardId,
+              listId: targetListId,
+            })
           : null;
 
         const refreshedAfter = afterCardId
-          ? await this.cardRepository.getPositionInList(
-              afterCardId,
-              targetListId
-            )
+          ? await this.cardRepository.getPositionInList({
+              cardId: afterCardId,
+              listId: targetListId,
+            })
           : null;
 
         ({ position } = computeNewPosition({

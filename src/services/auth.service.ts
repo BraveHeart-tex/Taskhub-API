@@ -139,7 +139,10 @@ export class AuthService {
   }
 
   async logout(sessionId: string, userId: string) {
-    await this.sessionRepo.deleteByIdAndUserId(sessionId, userId);
+    await this.sessionRepo.deleteByIdAndUserId({
+      sessionId,
+      userId,
+    });
   }
   private async maybeExtendSession(session: { id: string; expiresAt: string }) {
     const now = Date.now();
@@ -151,7 +154,10 @@ export class AuthService {
 
     const newExpiresAt = new Date(now + SESSION_TTL_MS).toISOString();
 
-    await this.sessionRepo.extendIfLater(session.id, newExpiresAt);
+    await this.sessionRepo.extendIfLater({
+      sessionId: session.id,
+      newExpiresAt,
+    });
 
     return newExpiresAt;
   }

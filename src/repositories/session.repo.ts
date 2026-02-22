@@ -18,7 +18,13 @@ export class SessionRepository {
     return session ?? null;
   }
 
-  async updateExpiresAt(sessionId: string, expiresAt: string) {
+  async updateExpiresAt({
+    sessionId,
+    expiresAt,
+  }: {
+    sessionId: string;
+    expiresAt: string;
+  }) {
     const db = useDb();
     await db
       .update(sessions)
@@ -31,13 +37,25 @@ export class SessionRepository {
     await db.delete(sessions).where(eq(sessions.id, sessionId));
   }
 
-  async deleteByIdAndUserId(sessionId: string, userId: string) {
+  async deleteByIdAndUserId({
+    sessionId,
+    userId,
+  }: {
+    sessionId: string;
+    userId: string;
+  }) {
     const db = useDb();
     await db
       .delete(sessions)
       .where(and(eq(sessions.id, sessionId), eq(sessions.userId, userId)));
   }
-  async extendIfLater(sessionId: string, newExpiresAt: string) {
+  async extendIfLater({
+    sessionId,
+    newExpiresAt,
+  }: {
+    sessionId: string;
+    newExpiresAt: string;
+  }) {
     const db = useDb();
     await db
       .update(sessions)

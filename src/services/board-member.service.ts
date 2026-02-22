@@ -27,10 +27,10 @@ export class BoardMemberService {
       throw new BoardNotFoundError();
     }
 
-    const isMember = await this.boardMemberRepo.isMember(
+    const isMember = await this.boardMemberRepo.isMember({
       boardId,
-      currentUserId
-    );
+      userId: currentUserId,
+    });
     if (!isMember) {
       throw new UnauthorizedError();
     }
@@ -53,10 +53,10 @@ export class BoardMemberService {
       }
 
       const currentUserBoardMemberInfo =
-        await this.boardMemberRepo.findByIdAndUserId(
-          values.boardId,
-          currentUserId
-        );
+        await this.boardMemberRepo.findByIdAndUserId({
+          boardId: values.boardId,
+          userId: currentUserId,
+        });
 
       if (
         !currentUserBoardMemberInfo ||
@@ -66,10 +66,10 @@ export class BoardMemberService {
       }
 
       const targetUserBoardMemberInfo =
-        await this.boardMemberRepo.findByIdAndUserId(
-          values.boardId,
-          values.userId
-        );
+        await this.boardMemberRepo.findByIdAndUserId({
+          boardId: values.boardId,
+          userId: values.userId,
+        });
 
       if (targetUserBoardMemberInfo) {
         throw new BoardMemberAlreadyExistsError();
@@ -93,10 +93,10 @@ export class BoardMemberService {
       }
 
       const currentUserBoardMemberInfo =
-        await this.boardMemberRepo.findByIdAndUserId(
-          values.boardId,
-          currentUserId
-        );
+        await this.boardMemberRepo.findByIdAndUserId({
+          boardId: values.boardId,
+          userId: currentUserId,
+        });
 
       if (
         !currentUserBoardMemberInfo ||
@@ -106,10 +106,10 @@ export class BoardMemberService {
       }
 
       const targetUserBoardMemberInfo =
-        await this.boardMemberRepo.findByIdAndUserId(
-          values.boardId,
-          values.userId
-        );
+        await this.boardMemberRepo.findByIdAndUserId({
+          boardId: values.boardId,
+          userId: values.userId,
+        });
 
       if (!targetUserBoardMemberInfo) {
         throw new BoardMemberNotFoundError();

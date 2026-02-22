@@ -36,10 +36,13 @@ export class CardRepository {
       .limit(1);
     return row?.position ?? null;
   }
-  async getPositionInList(
-    cardId: string,
-    listId: string
-  ): Promise<string | null> {
+  async getPositionInList({
+    cardId,
+    listId,
+  }: {
+    cardId: string;
+    listId: string;
+  }): Promise<string | null> {
     const db = useDb();
     const [row] = await db
       .select({ position: cards.position })

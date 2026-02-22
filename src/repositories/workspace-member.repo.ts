@@ -34,7 +34,13 @@ export class WorkspaceMemberRepository {
       .where(eq(workspaceMembers.workspaceId, workspaceId));
   }
 
-  async isMember(workspaceId: string, userId: string) {
+  async isMember({
+    workspaceId,
+    userId,
+  }: {
+    workspaceId: string;
+    userId: string;
+  }) {
     const db = useDb();
     const result = await db.execute<{ exists: boolean }>(
       sql<{
@@ -44,7 +50,13 @@ export class WorkspaceMemberRepository {
     return result.rows[0]?.exists;
   }
 
-  async findByIdAndUserId(workspaceId: string, userId: string) {
+  async findByIdAndUserId({
+    workspaceId,
+    userId,
+  }: {
+    workspaceId: string;
+    userId: string;
+  }) {
     const db = useDb();
     const [workspaceMember] = await db
       .select({
@@ -84,5 +96,3 @@ export class WorkspaceMemberRepository {
     await db.delete(workspaceMembers).where(eq(workspaceMembers.id, id));
   }
 }
-
-

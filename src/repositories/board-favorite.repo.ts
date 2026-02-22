@@ -12,14 +12,26 @@ export class BoardFavoriteRepository {
 
     return rows.map((row) => row.boardId);
   }
-  async create(userId: string, boardId: string): Promise<void> {
+  async create({
+    userId,
+    boardId,
+  }: {
+    userId: string;
+    boardId: string;
+  }): Promise<void> {
     const db = useDb();
     await db.insert(boardFavorites).values({
       userId,
       boardId,
     });
   }
-  async delete(userId: string, boardId: string): Promise<void> {
+  async delete({
+    userId,
+    boardId,
+  }: {
+    userId: string;
+    boardId: string;
+  }): Promise<void> {
     const db = useDb();
     await db
       .delete(boardFavorites)

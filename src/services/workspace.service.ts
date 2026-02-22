@@ -102,7 +102,10 @@ export class WorkspaceService {
     }
 
     const isCurrentUserWorkspaceMember =
-      await this.workspaceMemberRepo.isMember(workspaceId, currentUserId);
+      await this.workspaceMemberRepo.isMember({
+        workspaceId,
+        userId: currentUserId,
+      });
 
     if (!isCurrentUserWorkspaceMember) {
       throw new WorkspaceMemberNotFoundError();
@@ -169,10 +172,10 @@ export class WorkspaceService {
       throw new WorkspaceNotFoundError();
     }
 
-    const isMember = await this.workspaceMemberRepo.isMember(
+    const isMember = await this.workspaceMemberRepo.isMember({
       workspaceId,
-      userId
-    );
+      userId,
+    });
 
     if (!isMember) {
       throw new WorkspaceMemberNotFoundError();

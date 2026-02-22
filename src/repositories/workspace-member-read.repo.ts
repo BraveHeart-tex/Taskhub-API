@@ -3,7 +3,13 @@ import { useDb } from '@/db/context';
 import { users, workspaceMembers } from '@/db/schema';
 
 export class WorkspaceMemberReadRepository {
-  async isMember(workspaceId: string, userId: string) {
+  async isMember({
+    workspaceId,
+    userId,
+  }: {
+    workspaceId: string;
+    userId: string;
+  }) {
     const db = useDb();
 
     const [row] = await db

@@ -43,10 +43,10 @@ export class BoardService {
       const title = values.title.trim();
       if (!title) throw new InvalidBoardTitleError();
 
-      const existing = await this.boardRepo.findByWorkspaceAndTitle(
-        values.workspaceId,
-        title
-      );
+      const existing = await this.boardRepo.findByWorkspaceAndTitle({
+        workspaceId: values.workspaceId,
+        title,
+      });
 
       if (existing) {
         throw new BoardTitleAlreadyExistsError();
@@ -98,10 +98,10 @@ export class BoardService {
     const title = changes.title.trim();
     if (!title) throw new InvalidBoardTitleError();
 
-    const existing = await this.boardRepo.findByWorkspaceAndTitle(
-      board.workspaceId,
-      title
-    );
+    const existing = await this.boardRepo.findByWorkspaceAndTitle({
+      workspaceId: board.workspaceId,
+      title,
+    });
 
     if (existing && existing.id !== boardId) {
       throw new BoardTitleAlreadyExistsError();
@@ -118,10 +118,10 @@ export class BoardService {
       throw new WorkspaceNotFoundError();
     }
 
-    const isMember = await this.workspaceMemberRepo.isMember(
+    const isMember = await this.workspaceMemberRepo.isMember({
       workspaceId,
-      currentUserId
-    );
+      userId: currentUserId,
+    });
     if (!isMember) {
       throw new UnauthorizedError();
     }
@@ -142,12 +142,12 @@ export class BoardService {
     boardId: string,
     userId: string
   ): Promise<GetBoardContextResponse> {
-    return this.boardReadRepo.getBoardContext(boardId, userId);
+    return this.boardReadRepo.getBoardContext({ boardId, userId });
   }
   async getBoardContent(
     boardId: string,
     userId: string
   ): Promise<BoardContentDto> {
-    return this.boardReadRepo.getBoardContent(boardId, userId);
+    return this.boardReadRepo.getBoardContent({ boardId, userId });
   }
 }

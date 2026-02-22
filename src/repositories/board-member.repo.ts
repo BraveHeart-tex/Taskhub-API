@@ -28,7 +28,7 @@ export class BoardMemberRepository {
       .innerJoin(users, eq(boardMembers.userId, users.id))
       .where(eq(boardMembers.boardId, boardId));
   }
-  async isMember(boardId: string, userId: string) {
+  async isMember({ boardId, userId }: { boardId: string; userId: string }) {
     const db = useDb();
     const result = await db.execute<{ exists: boolean }>(
       sql<{
@@ -37,7 +37,13 @@ export class BoardMemberRepository {
     );
     return result.rows[0]?.exists;
   }
-  async findByIdAndUserId(boardId: string, userId: string) {
+  async findByIdAndUserId({
+    boardId,
+    userId,
+  }: {
+    boardId: string;
+    userId: string;
+  }) {
     const db = useDb();
     const [boardMember] = await db
       .select({

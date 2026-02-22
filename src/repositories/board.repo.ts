@@ -17,7 +17,13 @@ export class BoardRepository {
 
     return board;
   }
-  async findByWorkspaceAndTitle(workspaceId: string, title: string) {
+  async findByWorkspaceAndTitle({
+    title,
+    workspaceId,
+  }: {
+    workspaceId: string;
+    title: string;
+  }) {
     const db = useDb();
     const [board] = await db
       .select()
@@ -59,7 +65,13 @@ export class BoardRepository {
         )
       );
   }
-  async findByUserIdAndWorkspaceId(userId: string, workspaceId: string) {
+  async findByUserIdAndWorkspaceId({
+    userId,
+    workspaceId,
+  }: {
+    userId: string;
+    workspaceId: string;
+  }) {
     const db = useDb();
     return db
       .select(getTableColumns(boards))
