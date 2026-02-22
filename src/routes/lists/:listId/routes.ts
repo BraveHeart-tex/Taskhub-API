@@ -21,7 +21,6 @@ const route: FastifyPluginAsyncZod = async (app) => {
       const { user } = requireAuth(request);
 
       await app.listService.updateList({
-        boardId: request.params.boardId,
         listId: request.params.listId,
         currentUserId: user.id,
         title: request.body.title,
@@ -49,7 +48,6 @@ const route: FastifyPluginAsyncZod = async (app) => {
       await app.listService.deleteList({
         currentUserId: user.id,
         listId: request.params.listId,
-        boardId: request.params.boardId,
       });
 
       return reply.status(HttpStatus.NO_CONTENT).send();

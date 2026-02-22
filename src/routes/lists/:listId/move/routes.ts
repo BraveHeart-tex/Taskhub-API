@@ -22,7 +22,6 @@ const route: FastifyPluginAsyncZod = async (app) => {
 
       await app.listService.moveList({
         currentUserId: user.id,
-        boardId: request.params.boardId,
         listId: request.params.listId,
         afterListId: request.body.afterListId,
         beforeListId: request.body.beforeListId,

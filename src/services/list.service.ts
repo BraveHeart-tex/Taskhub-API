@@ -58,32 +58,25 @@ export class ListService {
   }
   async updateList({
     currentUserId,
-    boardId,
     listId,
     title,
   }: {
     currentUserId: string;
-    boardId: string;
     listId: string;
     title: string;
   }) {
     return withTransaction(async () => {
-      const board = await this.boardRepository.findById(boardId);
-      if (!board) {
-        throw new BoardNotFoundError();
+      const list = await this.listRepository.findById(listId);
+      if (!list) {
+        throw new ListNotFoundError();
       }
 
       const isMember = await this.boardMemberRepository.isMember({
-        boardId,
+        boardId: list.boardId,
         userId: currentUserId,
       });
       if (!isMember) {
         throw new UnauthorizedError();
-      }
-
-      const list = await this.listRepository.findById(listId);
-      if (!list || list.boardId !== boardId) {
-        throw new ListNotFoundError();
       }
 
       const nextTitle = title.trim();
@@ -96,22 +89,21 @@ export class ListService {
   }
   async moveList({
     currentUserId,
-    boardId,
     listId,
     beforeListId,
     afterListId,
   }: MoveListParams) {
     return withTransaction(async () => {
+      const list = await this.listRepository.findById(listId);
+      if (!list) {
+        throw new ListNotFoundError();
+      }
+
       const isMember = await this.boardMemberRepository.isMember({
-        boardId,
+        boardId: list.boardId,
         userId: currentUserId,
       });
       if (!isMember) throw new UnauthorizedError();
-
-      const list = await this.listRepository.findById(listId);
-      if (!list || list.boardId !== boardId) {
-        throw new ListNotFoundError();
-      }
 
       await this.listRepository.lockById(listId);
 
@@ -124,8 +116,8 @@ export class ListService {
         : null;
 
       if (
-        (before && before.boardId !== boardId) ||
-        (after && after.boardId !== boardId)
+        (before && before.boardId !== list.boardId) ||
+        (after && after.boardId !== list.boardId)
       ) {
         throw new ListNotFoundError();
       }
@@ -136,7 +128,7 @@ export class ListService {
       });
 
       if (needsRebalance) {
-        await this.listRepository.rebalancePositions(boardId);
+        await this.listRepository.rebalancePositions(list.boardId);
 
         const refreshedBefore = beforeListId
           ? await this.listRepository.findById(beforeListId)
@@ -160,30 +152,23 @@ export class ListService {
   async deleteList({
     currentUserId,
     listId,
-    boardId,
   }: {
     currentUserId: string;
     listId: string;
-    boardId: string;
   }) {
     return withTransaction(async () => {
-      const board = await this.boardRepository.findById(boardId);
-      if (!board) {
-        throw new BoardNotFoundError();
+      const list = await this.listRepository.findById(listId);
+      if (!list) {
+        throw new ListNotFoundError();
       }
 
       const isCurrentUserBoardMember =
         await this.boardMemberRepository.isMember({
-          boardId,
+          boardId: list.boardId,
           userId: currentUserId,
         });
       if (!isCurrentUserBoardMember) {
         throw new UnauthorizedError();
-      }
-
-      const list = await this.listRepository.findById(listId);
-      if (!list) {
-        throw new ListNotFoundError();
       }
 
       await this.listRepository.delete(listId);

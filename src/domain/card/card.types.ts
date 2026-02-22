@@ -13,7 +13,6 @@ export interface CreateCardInput {
   title: string;
   description?: string;
   listId: string;
-  boardId: string;
 }
 
 export interface DeleteCardInput {

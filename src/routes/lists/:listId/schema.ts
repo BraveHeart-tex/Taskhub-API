@@ -5,7 +5,6 @@ import {
 } from '@/domain/board/board.consants';
 
 export const listRouteParamsSchema = z.object({
-  boardId: z.uuid(),
   listId: z.uuid(),
 });
 

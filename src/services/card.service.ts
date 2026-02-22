@@ -29,18 +29,17 @@ export class CardService {
     title,
     description,
     listId,
-    boardId,
   }: CreateCardInput) {
     return withTransaction(async () => {
       const list = await this.listRepository.findById(listId);
-      if (!list || list.boardId !== boardId) {
+      if (!list) {
         throw new ListNotFoundError();
       }
 
       await this.listRepository.lockById(listId);
 
       const isMember = await this.boardMemberRepository.isMember({
-        boardId,
+        boardId: list.boardId,
         userId: currentUserId,
       });
       if (!isMember) {
