@@ -46,6 +46,7 @@ export function buildApp() {
   app.register(autoload, {
     dir: path.join(__dirname, 'routes'),
     options: { prefix: '/api' },
+    ignoreFilter: (file) => file.endsWith('schema.ts'),
   });
 
   return app;
