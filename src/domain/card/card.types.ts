@@ -18,15 +18,11 @@ export interface CreateCardInput {
 export interface DeleteCardInput {
   currentUserId: string;
   cardId: string;
-  listId: string;
-  boardId: string;
 }
 
 export interface UpdateCardInput {
   currentUserId: string;
   cardId: string;
-  listId: string;
-  boardId: string;
   title?: string;
   description?: string;
 }

@@ -70,25 +70,20 @@ export class CardService {
       });
     });
   }
-  async deleteCard({
-    currentUserId,
-    cardId,
-    listId,
-    boardId,
-  }: DeleteCardInput) {
+  async deleteCard({ currentUserId, cardId }: DeleteCardInput) {
     return withTransaction(async () => {
       const card = await this.cardRepository.findById(cardId);
-      if (!card || card.listId !== listId) {
+      if (!card) {
         throw new CardNotFoundError();
       }
 
-      const list = await this.listRepository.findById(listId);
-      if (!list || list.boardId !== boardId) {
+      const list = await this.listRepository.findById(card.listId);
+      if (!list) {
         throw new ListNotFoundError();
       }
 
       const isMember = await this.boardMemberRepository.isMember({
-        boardId: boardId,
+        boardId: list.boardId,
         userId: currentUserId,
       });
       if (!isMember) {
@@ -101,24 +96,22 @@ export class CardService {
   async updateCard({
     currentUserId,
     cardId,
-    listId,
-    boardId,
     title,
     description,
   }: UpdateCardInput) {
     return withTransaction(async () => {
       const card = await this.cardRepository.findById(cardId);
-      if (!card || card.listId !== listId) {
+      if (!card) {
         throw new CardNotFoundError();
       }
 
-      const list = await this.listRepository.findById(listId);
-      if (!list || list.boardId !== boardId) {
+      const list = await this.listRepository.findById(card.listId);
+      if (!list) {
         throw new ListNotFoundError();
       }
 
       const isMember = await this.boardMemberRepository.isMember({
-        boardId,
+        boardId: list.boardId,
         userId: currentUserId,
       });
       if (!isMember) {

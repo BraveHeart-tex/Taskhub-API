@@ -6,8 +6,6 @@ import {
 } from '@/domain/card/card.constants';
 
 export const cardRouteParamsSchema = z.object({
-  boardId: z.uuid(),
-  listId: z.uuid(),
   cardId: z.uuid(),
 });
 

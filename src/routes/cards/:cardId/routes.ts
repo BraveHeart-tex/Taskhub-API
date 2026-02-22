@@ -22,8 +22,6 @@ const route: FastifyPluginAsyncZod = async (app) => {
 
       await app.cardService.deleteCard({
         currentUserId: user.id,
-        boardId: request.params.boardId,
-        listId: request.params.listId,
         cardId: request.params.cardId,
       });
 
@@ -51,8 +49,6 @@ const route: FastifyPluginAsyncZod = async (app) => {
 
       const updatedCard = await app.cardService.updateCard({
         currentUserId: user.id,
-        boardId: request.params.boardId,
-        listId: request.params.listId,
         cardId: request.params.cardId,
         title: request.body.title,
         description: request.body.description,
