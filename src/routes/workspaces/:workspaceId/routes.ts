@@ -8,7 +8,7 @@ import {
 } from '../schema';
 import { workspaceRouteParamsSchema } from './schema';
 
-const route: FastifyPluginAsyncZod = async (app) => {
+const workspaceRoutes: FastifyPluginAsyncZod = async (app) => {
   app.get(
     '/',
     {
@@ -92,4 +92,4 @@ const route: FastifyPluginAsyncZod = async (app) => {
   );
 };
 
-export default route;
+export default workspaceRoutes;
