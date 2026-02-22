@@ -4,6 +4,8 @@ import { isFastifyValidationError } from '@/http/fastify-validation-error';
 import { HttpStatus } from '@/http/http-status';
 import { errorRegistry } from '@/lib/transport/errors/error-registry';
 
+const isProd = process.env.NODE_ENV === 'production';
+
 export default fp(async (app) => {
   app.setErrorHandler((err, request, reply) => {
     request.log.error(err);
@@ -11,7 +13,7 @@ export default fp(async (app) => {
     const requestId = request.id;
 
     if (isFastifyValidationError(err)) {
-      return reply.status(400).send({
+      return reply.status(HttpStatus.BAD_REQUEST).send({
         error: {
           code: 'VALIDATION_ERROR',
           message: 'Request validation failed',
@@ -40,19 +42,15 @@ export default fp(async (app) => {
       }
     }
 
-    return (
-      reply
-        // biome-ignore lint/suspicious/noExplicitAny: any is fine here
-        .status((err as any)?.statusCode ?? HttpStatus.INTERNAL_SERVER_ERROR)
-        .send({
-          error: {
-            // biome-ignore lint/suspicious/noExplicitAny: any is fine here
-            code: (err as any)?.code || 'INTERNAL_ERROR',
-            // biome-ignore lint/suspicious/noExplicitAny: any is fine here
-            message: (err as any).message || 'Internal server error',
-            requestId,
-          },
-        })
-    );
+    const status = (err as any)?.statusCode ?? HttpStatus.INTERNAL_SERVER_ERROR;
+    const message = isProd ? 'Internal server error' : (err as any).message;
+
+    return reply.status(status).send({
+      error: {
+        code: 'INTERNAL_ERROR',
+        message,
+        requestId,
+      },
+    });
   });
 });
