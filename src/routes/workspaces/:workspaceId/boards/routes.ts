@@ -1,14 +1,14 @@
 import type { FastifyPluginAsyncZod } from 'fastify-type-provider-zod';
 import { HttpStatus } from '@/http/http-status';
 import { requireAuth } from '@/lib/require-auth';
-import { workspaceRouteParamsSchema } from '../schema';
 import {
   boardSchema,
   createBoardBodySchema,
   workspaceBoardPreviewResponseSchema,
-} from './schema';
+} from '@/routes/boards/schema';
+import { workspaceRouteParamsSchema } from '../schema';
 
-const route: FastifyPluginAsyncZod = async (app) => {
+const workspaceBoardRoutes: FastifyPluginAsyncZod = async (app) => {
   app.get(
     '/',
     {
@@ -66,4 +66,4 @@ const route: FastifyPluginAsyncZod = async (app) => {
   );
 };
 
-export default route;
+export default workspaceBoardRoutes;

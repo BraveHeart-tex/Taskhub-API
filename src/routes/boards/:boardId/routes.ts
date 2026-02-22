@@ -4,7 +4,7 @@ import { requireAuth } from '@/lib/require-auth';
 import { boardSchema, updateBoardBodySchema } from '../schema';
 import { boardRouteParamsSchema } from './schema';
 
-const route: FastifyPluginAsyncZod = async (app) => {
+const boardRoutes: FastifyPluginAsyncZod = async (app) => {
   app.get(
     '/',
     {
@@ -104,4 +104,4 @@ const route: FastifyPluginAsyncZod = async (app) => {
   );
 };
 
-export default route;
+export default boardRoutes;

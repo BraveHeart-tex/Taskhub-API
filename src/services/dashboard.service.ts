@@ -1,5 +1,5 @@
 import type { DashboardReadRepository } from '@/repositories/dashboard-read.repo';
-import type { DashboardDto } from '@/routes/users/me/dashboard/schema';
+import type { DashboardDto } from '@/routes/me/dashboard/schema';
 
 export class DashboardService {
   constructor(private readonly dashboardRepo: DashboardReadRepository) {}
