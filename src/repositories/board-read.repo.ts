@@ -1,4 +1,4 @@
-import { and, asc, desc, eq, inArray, sql } from 'drizzle-orm';
+import { and, asc, desc, eq, inArray, isNull, sql } from 'drizzle-orm';
 import { useDb } from '@/db/context';
 import {
   boardFavorites,
@@ -26,9 +26,9 @@ export class BoardReadRepository {
         title: boards.title,
         workspaceId: boards.workspaceId,
         role: boardMembers.role,
-        isFavorite: sql<boolean>`
-          ${boardFavorites.userId} IS NOT NULL
-        `.as('is_favorite'),
+        isFavorite: sql<boolean>`count(${boardFavorites.userId}) > 0`.as(
+          'is_favorite'
+        ),
       })
       .from(boards)
       .innerJoin(
@@ -45,14 +45,14 @@ export class BoardReadRepository {
           eq(boardFavorites.userId, userId)
         )
       )
-      .where(eq(boards.id, boardId))
+      .where(and(eq(boards.id, boardId), isNull(boards.archivedAt)))
+      .groupBy(boards.id, boardMembers.role)
       .execute();
 
-    if (rows.length === 0) {
+    const board = rows[0];
+    if (!board) {
       throw new BoardMemberNotFoundError();
     }
-
-    const board = rows[0];
 
     const isOwner = board.role === 'owner';
 
@@ -86,7 +86,7 @@ export class BoardReadRepository {
   async listBoardsForWorkspace(workspaceId: string) {
     const db = useDb();
 
-    const rows = await db
+    return await db
       .select({
         id: boards.id,
         title: boards.title,
@@ -94,16 +94,17 @@ export class BoardReadRepository {
         ownerId: boards.createdBy,
         createdAt: boards.createdAt,
         updatedAt: boards.updatedAt,
-        memberCount: sql`COUNT(${boardMembers.id})`
-          .mapWith(Number)
-          .as('member_count'),
+        memberCount: sql<number>`cast(count(${boardMembers.id}) as int)`.as(
+          'member_count'
+        ),
       })
       .from(boards)
       .leftJoin(boardMembers, eq(boardMembers.boardId, boards.id))
-      .where(eq(boards.workspaceId, workspaceId))
-      .groupBy(boards.id);
-
-    return rows;
+      .where(
+        and(eq(boards.workspaceId, workspaceId), isNull(boards.archivedAt))
+      )
+      .groupBy(boards.id)
+      .orderBy(desc(boards.createdAt));
   }
   async getBoardContent({
     boardId,
@@ -114,65 +115,66 @@ export class BoardReadRepository {
   }) {
     const db = useDb();
 
-    const isMember = await db
-      .select()
+    const membership = await db
+      .select({ id: boardMembers.id })
       .from(boardMembers)
       .where(
         and(eq(boardMembers.boardId, boardId), eq(boardMembers.userId, userId))
       )
       .limit(1);
 
-    if (isMember.length === 0) {
-      throw new BoardMemberNotFoundError();
-    }
+    if (membership.length === 0) throw new BoardMemberNotFoundError();
 
     const listsRows = await db
       .select()
       .from(lists)
-      .where(eq(lists.boardId, boardId))
+      .where(and(eq(lists.boardId, boardId), isNull(lists.archivedAt)))
       .orderBy(asc(lists.position));
 
-    const cardRows = listsRows.length
-      ? await db
-          .select()
-          .from(cards)
-          .where(
-            inArray(
-              cards.listId,
-              listsRows.map((l) => l.id)
-            )
-          )
-          .orderBy(desc(cards.position))
-      : [];
-
-    const cardsByList = new Map<string, typeof cardRows>();
-
-    for (const card of cardRows) {
-      const arr = cardsByList.get(card.listId) ?? [];
-      arr.push(card);
-      cardsByList.set(card.listId, arr);
+    if (listsRows.length === 0) {
+      return { boardId, lists: [], users: {} };
     }
 
-    const userIds = new Set(cardRows.map((c) => c.createdBy));
+    const listIds = listsRows.map((l) => l.id);
 
-    const userRows = await db
-      .select({
-        id: users.id,
-        fullName: users.fullName,
-        avatarUrl: users.avatarUrl,
-      })
-      .from(users)
-      .where(inArray(users.id, [...userIds]));
+    const cardRows = await db
+      .select()
+      .from(cards)
+      .where(and(inArray(cards.listId, listIds), isNull(cards.archivedAt)))
+      .orderBy(desc(cards.position));
 
-    const userMap = Object.fromEntries(userRows.map((u) => [u.id, u]));
+    const creatorIds = [
+      ...new Set(cardRows.map((c) => c.createdBy).filter(Boolean)),
+    ] as string[];
+
+    const userMap: Record<string, any> = {};
+    if (creatorIds.length > 0) {
+      const userRows = await db
+        .select({
+          id: users.id,
+          fullName: users.fullName,
+          avatarUrl: users.avatarUrl,
+        })
+        .from(users)
+        .where(inArray(users.id, creatorIds));
+
+      for (const u of userRows) userMap[u.id] = u;
+    }
+
+    const cardsByList = cardRows.reduce(
+      (acc, card) => {
+        if (!acc[card.listId]) acc[card.listId] = [];
+        acc[card.listId].push(card);
+        return acc;
+      },
+      {} as Record<string, typeof cardRows>
+    );
 
     return {
       boardId,
       lists: listsRows.map((l) => ({
-        id: l.id,
-        title: l.title,
-        position: l.position,
-        cards: cardsByList.get(l.id) ?? [],
+        ...l,
+        cards: cardsByList[l.id] ?? [],
       })),
       users: userMap,
     };
