@@ -1,8 +1,8 @@
 import type { FastifyPluginAsyncZod } from 'fastify-type-provider-zod';
 import { HttpStatus } from '@/http/http-status';
 import { requireAuth } from '@/lib/require-auth';
-import { boardRouteParamsSchema } from '../boards/:boardId/schema';
-import { createListBodySchema, listSchema } from './schema';
+import { createListBodySchema, listSchema } from '@/routes/lists/schema';
+import { boardRouteParamsSchema } from '../schema';
 
 const listRoutes: FastifyPluginAsyncZod = async (app) => {
   app.post(
