@@ -22,6 +22,7 @@ const route: FastifyPluginAsyncZod = async (app) => {
       return reply.send(result);
     }
   );
+
   app.post(
     '/:boardId',
     {
@@ -44,6 +45,7 @@ const route: FastifyPluginAsyncZod = async (app) => {
       return reply.status(HttpStatus.NO_CONTENT).send();
     }
   );
+
   app.delete(
     '/:boardId',
     {
